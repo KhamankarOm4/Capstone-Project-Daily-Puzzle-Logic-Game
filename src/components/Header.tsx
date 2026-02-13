@@ -2,13 +2,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logout } from '../features/user/userSlice';
 import { useState, useRef, useEffect } from 'react';
+import { Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+
+const ProfileModal = lazy(() => import('./ProfileModal'));
 
 const Header = () => {
     const { user } = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -132,6 +136,15 @@ const Header = () => {
                                             </div>
 
                                             <div className="py-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsDropdownOpen(false);
+                                                        setIsProfileModalOpen(true);
+                                                    }}
+                                                    className="w-full text-left px-5 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3 group"
+                                                >
+                                                    <span className="group-hover:scale-110 transition-transform">👤</span> Edit Profile
+                                                </button>
                                                 <Link to="/practice" className="flex items-center gap-3 px-5 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors group" onClick={() => setIsDropdownOpen(false)}>
                                                     <span className="group-hover:scale-110 transition-transform">🧩</span> Practice
                                                 </Link>
@@ -169,6 +182,10 @@ const Header = () => {
                     </div>
                 </div>
             </div>
+
+            <Suspense fallback={null}>
+                {user && <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />}
+            </Suspense>
         </header>
     );
 };

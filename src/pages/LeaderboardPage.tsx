@@ -2,8 +2,10 @@ import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import { fetchLeaderboard, type LeaderboardEntry } from '../utils/leaderboardApi';
 import { motion } from 'framer-motion';
+import { useAppSelector } from '../store/hooks';
 
 const LeaderboardPage = () => {
+    const { user } = useAppSelector((state) => state.user);
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -72,7 +74,7 @@ const LeaderboardPage = () => {
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
-                                            className="hover:bg-white/5 transition-colors"
+                                            className={`hover:bg-white/5 transition-colors ${entry.user_id === user?.id ? 'bg-white/10 border-l-4 border-accent-cyan' : ''}`}
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold
@@ -87,9 +89,16 @@ const LeaderboardPage = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white/10">
-                                                        {(entry.user_id || 'U').charAt(0).toUpperCase()}
+                                                        {(entry.user?.username || entry.user?.name || 'A').charAt(0).toUpperCase()}
                                                     </div>
-                                                    <span className="font-bold text-white">User {entry.user_id.slice(-4)}</span>
+                                                    <div className="flex flex-col">
+                                                        <span className={`font-bold ${entry.user_id === user?.id ? 'text-accent-cyan' : 'text-white'}`}>
+                                                            {entry.user_id === user?.id ? 'You' : (entry.user?.username || 'Anonymous')}
+                                                        </span>
+                                                        {entry.user_id === user?.id && entry.user?.username && (
+                                                            <span className="text-[10px] text-neutral-400">@{entry.user.username}</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-accent-glow">

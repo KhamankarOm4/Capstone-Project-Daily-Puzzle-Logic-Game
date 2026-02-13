@@ -91,10 +91,76 @@ app.get('/api/leaderboard', async (req, res) => {
         take: 100
     });
 
-    res.json(scores);
+    // Manually fetch user details for the leaderboard to avoid foreign key issues with guest IDs
+    const userIds = [...new Set(scores.map(s => s.user_id).filter(id => !id.startsWith('guest_')))];
+
+    let usersMap = {};
+    if (userIds.length > 0) {
+        const users = await prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, username: true, name: true, avatar: true }
+        });
+        users.forEach(u => usersMap[u.id] = u);
+    }
+
+    const enrichedScores = scores.map(score => {
+        const user = usersMap[score.user_id];
+        return {
+            ...score,
+            user: user ? {
+                username: user.username,
+                name: user.name,
+                avatar: user.avatar
+            } : null
+        };
+    });
+
+    res.json(enrichedScores);
 });
 
-// GET auth/google
+// Update User Profile
+app.put('/api/user/profile', requireAuth(), async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const userId = req.user.id;
+        const { name, username, mobile } = req.body;
+
+        // Check uniqueness if username is changing
+        if (username) {
+            const existing = await prisma.user.findUnique({
+                where: { username }
+            });
+            if (existing && existing.id !== userId) {
+                return res.status(400).json({ error: 'Username already taken' });
+            }
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { name, username, mobile }
+        });
+
+        res.json(updatedUser);
+    } catch (e) {
+        console.error('Update profile error', e);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
+// GET User Dashboard
+app.get('/api/user/dashboard', requireAuth(), async (req, res) => {
+    const userId = req.user.id;
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.json(user);
+});
 // Start login
 app.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -212,23 +278,7 @@ app.post('/api/puzzle/complete', requireAuth(), async (req, res) => {
 });
 
 
-// GET User Dashboard
-app.get('/api/user/dashboard', requireAuth(), async (req, res) => {
-    const userId = req.user.id;
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            email: true,
-            streak_count: true,
-            last_played: true,
-            total_points: true
-        }
-    });
 
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
-    res.json(user);
-});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

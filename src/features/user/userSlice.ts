@@ -2,10 +2,12 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export interface User {
     id: string;
-    googleId: string;
+    googleId?: string; // Optional now as we might not use it directly
     email: string;
-    name: string;
-    avatar: string;
+    name?: string;
+    username?: string;
+    mobile?: string;
+    avatar?: string;
     streak_count: number;
     total_points: number;
     last_played: string | null;

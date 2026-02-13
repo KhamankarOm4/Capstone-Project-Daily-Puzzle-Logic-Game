@@ -7,6 +7,11 @@ export interface LeaderboardEntry {
     score: number;
     time_taken: number;
     submitted_at?: string;
+    user?: {
+        name?: string;
+        username?: string;
+        avatar?: string;
+    };
 }
 
 export interface LeaderboardResponse {
