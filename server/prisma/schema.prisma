@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model DailyScore {
+  id         String   @id @default(cuid())
+  user_id    String
+  date       DateTime
+  score      Int
+  time_taken Int
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  streak_count Int      @default(0)
+  total_points Int      @default(0)
+  last_played  DateTime?
+}

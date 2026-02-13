@@ -1,0 +1,113 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { useEffect, useState } from 'react';
+import { login } from './features/user/userSlice';
+import LoginPage from './pages/LoginPage';
+import GamePage from './pages/GamePage';
+import LeaderboardPage from './pages/LeaderboardPage';
+import ProgressPage from './pages/ProgressPage';
+import PracticePage from './pages/PracticePage';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
+  const { isAuthenticated } = useAppSelector((state) => state.user);
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+function App() {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated } = useAppSelector((state) => state.user);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/auth/user', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData) {
+            try {
+              const dashboardResponse = await fetch('http://localhost:3001/api/user/dashboard', {
+                credentials: 'include'
+              });
+              if (dashboardResponse.ok) {
+                const dashboardData = await dashboardResponse.json();
+                dispatch(login({ ...userData, ...dashboardData }));
+              } else {
+                dispatch(login(userData));
+              }
+            } catch (e) {
+              console.error('Failed to fetch dashboard:', e);
+              dispatch(login(userData));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [dispatch]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>;
+  }
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <GamePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leaderboard"
+          element={
+            <ProtectedRoute>
+              <LeaderboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute>
+              <ProgressPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/practice"
+          element={
+            <ProtectedRoute>
+              <PracticePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/practice/:id"
+          element={
+            <ProtectedRoute>
+              <GamePage mode="practice" />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
