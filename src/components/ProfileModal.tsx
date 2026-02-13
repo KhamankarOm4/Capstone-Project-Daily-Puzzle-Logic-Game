@@ -36,6 +36,7 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
             const response = await fetch('http://localhost:3001/api/user/profile', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ name, username, mobile }),
             });
 

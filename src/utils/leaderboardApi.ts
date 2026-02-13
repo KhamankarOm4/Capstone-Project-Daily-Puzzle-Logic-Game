@@ -31,6 +31,7 @@ export const submitScore = async (
         const response = await fetch(`${API_BASE}/leaderboard`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 user_id: userId,
                 date,

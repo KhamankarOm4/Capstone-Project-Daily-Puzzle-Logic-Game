@@ -30,7 +30,23 @@ const logError = (context, error) => {
 
 const app = express();
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Allow any localhost origin
+        if (origin.match(/^http:\/\/localhost:\d+$/)) {
+            return callback(null, true);
+        }
+
+        // Allow specific production domain if needed
+        if (origin === process.env.FRONTEND_URL) {
+            return callback(null, true);
+        }
+
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+    },
     credentials: true
 }));
 app.use(express.json());
@@ -115,7 +131,10 @@ app.get('/api/leaderboard', async (req, res) => {
         };
     });
 
-    res.json(enrichedScores);
+    res.json({
+        leaderboard: enrichedScores,
+        total: enrichedScores.length
+    });
 });
 
 // Update User Profile
@@ -126,7 +145,12 @@ app.put('/api/user/profile', requireAuth(), async (req, res) => {
         }
 
         const userId = req.user.id;
-        const { name, username, mobile } = req.body;
+        let { name, username, mobile } = req.body;
+
+        // Sanitize inputs: convert empty strings to null to avoid unique constraint violations
+        if (typeof name === 'string' && name.trim() === '') name = null;
+        if (typeof username === 'string' && username.trim() === '') username = null;
+        if (typeof mobile === 'string' && mobile.trim() === '') mobile = null;
 
         // Check uniqueness if username is changing
         if (username) {
@@ -146,7 +170,7 @@ app.put('/api/user/profile', requireAuth(), async (req, res) => {
         res.json(updatedUser);
     } catch (e) {
         console.error('Update profile error', e);
-        res.status(500).json({ error: 'Failed to update profile' });
+        res.status(500).json({ error: `Update failed: ${e.message}` });
     }
 });
 
