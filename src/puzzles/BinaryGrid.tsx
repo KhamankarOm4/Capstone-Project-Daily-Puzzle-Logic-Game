@@ -150,12 +150,18 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
         };
 
         return (
-            <div className="flex flex-col items-center gap-4">
-                <h3 className="text-xl font-bold">Binary Logic Grid</h3>
-                <p className="text-sm text-gray-600 max-w-md text-center">
-                    Fill with 0s and 1s. Each row/column must have equal 0s and 1s. No three consecutive same digits.
-                </p>
-                <div className="inline-grid gap-1" style={{ gridTemplateColumns: `repeat(${data.size}, minmax(0, 1fr))` }}>
+            <div className="flex flex-col items-center gap-8 w-full max-w-sm mx-auto p-8 glass-panel rounded-3xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <span className="text-8xl font-black text-white">01</span>
+                </div>
+
+                <div className="text-center space-y-2 relative z-10">
+                    <h3 className="text-3xl font-black text-white tracking-tighter">Binary <span className="text-accent-cyan">Logic</span></h3>
+                    <p className="text-neutral-300 text-sm font-medium">0s & 1s. Equal count. No triples.</p>
+                </div>
+
+                <div className="inline-grid gap-2.5 p-3 bg-black/20 rounded-2xl border border-white/5 backdrop-blur-sm relative z-10"
+                    style={{ gridTemplateColumns: `repeat(${data.size}, minmax(0, 1fr))` }}>
                     {grid.map((row, i) => (
                         row.map((cell, j) => {
                             const isInitial = data.initialGrid[i][j] !== null;
@@ -164,11 +170,14 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
                                     key={`${i}-${j}`}
                                     onClick={() => handleCellClick(i, j)}
                                     disabled={disabled || isInitial}
-                                    className={`w-12 h-12 text-xl font-bold border-2 rounded transition-colors
-                                    ${isInitial ? 'bg-gray-200 border-gray-400 cursor-not-allowed' : 'bg-white border-gray-300 hover:border-blue-400'}
-                                    ${cell === 0 ? 'text-blue-600' : cell === 1 ? 'text-red-600' : 'text-gray-300'}`}
+                                    className={`w-12 h-12 sm:w-14 sm:h-14 text-2xl font-bold rounded-xl transition-all duration-300 border
+                                    ${isInitial
+                                            ? 'bg-white/5 border-white/5 text-neutral-500 cursor-not-allowed'
+                                            : 'bg-surface-200 border-white/10 hover:bg-white/10 hover:border-accent/30 shadow-[0_4px_10px_rgba(0,0,0,0.1)]'}
+                                    ${cell === 0 ? 'text-accent-glow font-mono' : cell === 1 ? 'text-accent-cyan font-mono' : 'text-transparent'}
+                                    ${!isInitial && 'active:scale-95 focus:outline-none focus:ring-0 hover:scale-105'}`}
                                 >
-                                    {cell === null ? '·' : cell}
+                                    {cell === null ? '.' : cell}
                                 </button>
                             );
                         })

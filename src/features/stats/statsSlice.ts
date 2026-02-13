@@ -34,7 +34,7 @@ const statsSlice = createSlice({
             state.currentStreak = action.payload.currentStreak;
             state.maxStreak = action.payload.maxStreak;
         },
-        loadStats(state, action: PayloadAction<StatsState>) {
+        loadStats(_state, action: PayloadAction<StatsState>) {
             return action.payload;
         },
         resetStats(_state) {

@@ -111,47 +111,79 @@ export const DeductionGridEngine: PuzzleEngine<DeductionData, DeductionSolution,
         };
 
         return (
-            <div className="flex flex-col items-center gap-4">
-                <h3 className="text-xl font-bold">Deduction Grid</h3>
-                <p className="text-sm text-gray-600">Match each person to their item using the clues</p>
-
-                <div className="bg-blue-50 p-3 rounded-lg mb-2">
-                    <p className="font-semibold text-sm mb-1">Clues:</p>
-                    {data.clues.map((clue, i) => (
-                        <p key={i} className="text-sm">• {clue}</p>
-                    ))}
+            <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto p-8 glass-panel rounded-3xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                    <span className="text-8xl font-black text-white">L</span>
                 </div>
 
-                <div className="inline-block border-2 border-gray-800">
-                    <div className="grid grid-cols-4 gap-0">
-                        <div className="w-24 h-12"></div>
+                <div className="text-center space-y-2 relative z-10">
+                    <h3 className="text-3xl font-black text-white tracking-tighter">Logic <span className="text-accent-glow">Grid</span></h3>
+                    <p className="text-neutral-300 text-sm font-medium">Use clues to find matches. Click to toggle.</p>
+                </div>
+
+                <div className="w-full bg-black/20 p-6 rounded-2xl border border-white/5 backdrop-blur-sm relative z-10">
+                    <h4 className="font-bold text-accent-cyan mb-4 text-xs uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1 h-4 bg-accent-cyan rounded-full"></span>
+                        Intel / Clues
+                    </h4>
+                    <ul className="space-y-3 text-sm text-neutral-300">
+                        {data.clues.map((clue, i) => (
+                            <li key={i} className="flex items-start gap-3 bg-white/5 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                                <span className="text-accent-cyan font-bold">•</span>
+                                <span className="font-medium tracking-wide">{clue}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="overflow-x-auto max-w-full p-2 relative z-10">
+                    <div className="inline-grid grid-cols-4 gap-1.5 p-3 bg-black/40 rounded-2xl border border-white/10 shadow-inner backdrop-blur-md">
+                        {/* Empty Corner */}
+                        <div className="w-20 h-10 md:w-24 md:h-12"></div>
+
+                        {/* Column Headers */}
                         {data.categories.cols.map((col, i) => (
-                            <div key={i} className="w-16 h-12 flex items-center justify-center text-xs font-bold bg-gray-200 border border-gray-400">
+                            <div key={i} className="w-16 h-10 md:w-20 md:h-12 flex items-center justify-center text-[10px] md:text-xs font-bold text-neutral-300 bg-white/5 rounded-lg border border-white/5 uppercase tracking-wide">
                                 {col}
                             </div>
                         ))}
 
+                        {/* Rows */}
                         {grid.map((row, i) => (
                             <>
-                                <div key={`row-${i}`} className="w-24 h-16 flex items-center justify-center text-xs font-bold bg-gray-200 border border-gray-400">
+                                {/* Row Header */}
+                                <div key={`row-${i}`} className="w-20 h-14 md:w-24 md:h-16 flex items-center justify-center text-[10px] md:text-xs font-bold text-neutral-300 bg-white/5 rounded-lg border border-white/5 px-2 text-center uppercase tracking-wide">
                                     {data.categories.rows[i]}
                                 </div>
+
+                                {/* Cells */}
                                 {row.map((cell, j) => (
                                     <button
                                         key={`${i}-${j}`}
                                         onClick={() => handleCellClick(i, j)}
                                         disabled={disabled}
-                                        className="w-16 h-16 flex items-center justify-center text-2xl font-bold border border-gray-300 hover:bg-gray-50 transition-colors"
+                                        className={`w-16 h-14 md:w-20 md:h-16 flex items-center justify-center text-2xl font-bold rounded-xl border transition-all duration-200
+                                            ${cell === 'X'
+                                                ? 'bg-red-500/10 border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
+                                                : cell === 'O'
+                                                    ? 'bg-accent-cyan/10 border-accent-cyan/30 text-accent-cyan shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                                                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'}
+                                            ${!disabled && 'hover:scale-105 active:scale-95 focus:outline-none focus:ring-0'}
+                                        `}
                                     >
-                                        {cell === 'X' && <span className="text-green-600">✓</span>}
-                                        {cell === 'O' && <span className="text-red-600">✗</span>}
+                                        {cell === 'X' && '✗'}
+                                        {cell === 'O' && '✓'}
                                     </button>
                                 ))}
                             </>
                         ))}
                     </div>
                 </div>
-                <p className="text-xs text-gray-500">Click cells to mark: ✓ (match) or ✗ (no match)</p>
+
+                <div className="flex gap-6 text-xs text-neutral-400 font-medium uppercase tracking-wider bg-black/20 px-6 py-2 rounded-full border border-white/5">
+                    <span className="flex items-center gap-2"><span className="text-red-400 font-bold text-base">✗</span> False</span>
+                    <span className="flex items-center gap-2"><span className="text-accent-cyan font-bold text-base">✓</span> True</span>
+                </div>
             </div>
         );
     },

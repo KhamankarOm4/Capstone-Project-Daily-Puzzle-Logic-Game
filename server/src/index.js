@@ -110,13 +110,26 @@ app.get('/auth/google/callback',
 
 // Get logged-in user
 app.get('/auth/user', (req, res) => {
-    res.json(req.user || null);
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        res.json(req.user);
+    } else {
+        res.status(401).json({ error: 'Not authenticated' });
+    }
 });
 
 // Logout
+// Logout
 app.get('/auth/logout', (req, res) => {
-    req.logout(() => {
-        res.redirect(process.env.FRONTEND_URL);
+    req.logout((err) => {
+        if (err) { return next(err); }
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Could not log out' });
+            } else {
+                res.clearCookie('connect.sid');
+                return res.json({ message: 'Logged out successfully' });
+            }
+        });
     });
 });
 

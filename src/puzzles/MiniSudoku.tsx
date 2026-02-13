@@ -146,32 +146,45 @@ export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, 
         };
 
         return (
-            <div className="flex flex-col items-center gap-4">
-                <h3 className="text-xl font-bold text-white">Mini Sudoku (4×4)</h3>
-                <p className="text-sm text-gray-400">Fill the grid so each row, column, and 2×2 box contains 1-4</p>
-                <div className="inline-grid grid-cols-4 gap-0 border-2 border-slate-600 rounded-lg overflow-hidden shadow-2xl">
+            <div className="flex flex-col items-center gap-8 w-full max-w-sm mx-auto p-8 glass-panel rounded-3xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <span className="text-8xl font-black text-white">4</span>
+                </div>
+
+                <div className="text-center space-y-2 relative z-10">
+                    <h3 className="text-3xl font-black text-white tracking-tighter">Mini <span className="text-accent-glow">Sudoku</span></h3>
+                    <p className="text-neutral-300 text-sm font-medium">Fill the grid. 1-4. No repeats.</p>
+                </div>
+
+                <div className="inline-grid grid-cols-4 gap-2.5 p-3 bg-black/20 rounded-2xl border border-white/5 backdrop-blur-sm relative z-10">
                     {grid.map((row, i) => (
                         row.map((cell, j) => {
                             const isInitial = data.initialGrid[i][j] !== null;
+                            // Add extra margin for the 2x2 blocks visual separation
                             const isRightBorder = j === 1;
                             const isBottomBorder = i === 1;
 
                             return (
-                                <input
-                                    key={`${i}-${j}`}
-                                    type="text"
-                                    maxLength={1}
-                                    value={cell || ''}
-                                    onChange={(e) => handleChange(i, j, e.target.value)}
-                                    disabled={disabled || isInitial}
-                                    className={`w-14 h-14 md:w-16 md:h-16 text-center text-2xl font-bold transition-all duration-200
-                                        ${isInitial
-                                            ? 'bg-slate-700/50 text-blue-300'
-                                            : 'bg-slate-800/80 text-white hover:bg-slate-700 focus:bg-slate-700'}
-                                        ${isRightBorder ? 'border-r-2 border-r-slate-600' : 'border-r border-r-slate-700/50'}
-                                        ${isBottomBorder ? 'border-b-2 border-b-slate-600' : 'border-b border-b-slate-700/50'}
-                                        focus:outline-none focus:ring-0 focus:bg-slate-600`}
-                                />
+                                <div key={`${i}-${j}`} className={`relative group ${isRightBorder ? 'mr-1' : ''} ${isBottomBorder ? 'mb-1' : ''}`}>
+                                    <input
+                                        type="text"
+                                        maxLength={1}
+                                        value={cell || ''}
+                                        onChange={(e) => handleChange(i, j, e.target.value)}
+                                        disabled={disabled || isInitial}
+                                        className={`w-14 h-14 sm:w-16 sm:h-16 text-center text-3xl font-bold rounded-xl transition-all duration-300
+                                            ${isInitial
+                                                ? 'bg-white/5 text-neutral-500 cursor-not-allowed border border-white/5'
+                                                : 'bg-surface-200 text-white hover:bg-white/10 focus:bg-accent/20 border border-white/10 focus:border-accent shadow-[0_4px_10px_rgba(0,0,0,0.1)]'}
+                                            ${!isInitial && 'focus:ring-0 focus:scale-105'}
+                                            focus:outline-none focus:z-10 caret-transparent selection:bg-transparent`}
+                                    />
+                                    {!isInitial && !cell && !disabled && (
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="w-2 h-2 rounded-full bg-white/20"></div>
+                                        </div>
+                                    )}
+                                </div>
                             );
                         })
                     ))}

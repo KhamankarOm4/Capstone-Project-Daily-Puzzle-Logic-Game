@@ -7,47 +7,55 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-gray-900 to-black p-4 overflow-hidden relative">
-            {/* Background elements */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]" />
+        <div
+            className="min-h-screen flex flex-col items-center justify-between p-8 relative overflow-hidden bg-cover bg-center"
+            style={{ backgroundImage: "url('/assets/login-bg.png')" }}
+        >
+            {/* Dark Overlay for readability */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
+            {/* Top Section: Welcome & Branding */}
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[2rem] shadow-2xl w-full max-w-md text-center relative z-10"
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative z-10 text-center mt-20"
             >
-                <div className="mb-8 flex justify-center">
-                    <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30">
-                        <span className="text-3xl">🧩</span>
-                    </div>
-                </div>
-
-                <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 mb-2">
-                    Daily Puzzle
+                <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] mb-4">
+                    LOGIC LOOPER
                 </h1>
+                <p className="text-2xl md:text-3xl font-light text-white/90 tracking-widest uppercase">
+                    Welcome to the Void
+                </p>
+            </motion.div>
 
-                <p className="text-gray-400 mb-10 text-lg font-light">
-                    Sharpen your logic daily.
+            {/* Bottom Section: Interesting Text & Login */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                className="relative z-10 w-full max-w-md text-center mb-12 flex flex-col gap-8"
+            >
+                <p className="text-lg md:text-xl text-white/80 font-medium italic leading-relaxed drop-shadow-md">
+                    "Chaos is merely a pattern waiting to be deciphered. <br />
+                    Step inside and unravel the mystery."
                 </p>
 
-                <div className="space-y-4">
+                <div className="flex justify-center">
                     <Button
-                        variant="google"
-                        fullWidth
-                        size="lg"
+                        variant="glow"
+                        size="xl"
                         onClick={handleGoogleLogin}
-                        className="!rounded-2xl"
-                        leftIcon={<img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />}
+                        className="!rounded-full px-12 py-4 text-lg shadow-[0_0_30px_rgba(112,0,255,0.6)] hover:shadow-[0_0_50px_rgba(112,0,255,0.8)] transition-shadow duration-300 transform hover:scale-105"
+                        leftIcon={<span className="text-2xl mr-2">G</span>}
                     >
-                        Continue with Google
+                        Enter the Realm
                     </Button>
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-white/10 text-sm text-gray-500">
-                    By continuing, you agree to our Terms of Service.
-                </div>
+                <p className="text-xs text-white/40 mt-4">
+                    By entering, you accept our Terms of Service.
+                </p>
             </motion.div>
         </div>
     );

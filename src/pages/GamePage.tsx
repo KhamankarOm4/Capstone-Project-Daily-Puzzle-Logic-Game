@@ -267,75 +267,105 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
     return (
         <Layout>
-            <div className="w-full max-w-4xl mx-auto space-y-8">
+            <div className="w-full max-w-5xl mx-auto space-y-12">
                 {/* Header Section */}
-                <div className="text-center space-y-2">
-                    <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-sm tracking-tight">
-                        Daily Puzzle Challenge
+                <div className="text-center space-y-4 relative">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-accent/20 blur-[100px] rounded-full pointer-events-none"></div>
+                    <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-400 drop-shadow-sm tracking-tighter">
+                        Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent to-accent-glow">Puzzle</span>
                     </h1>
-                    <p className="text-gray-400 text-lg font-light">
-                        Solve the puzzle before time runs out!
+                    <p className="relative text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                        One challenge. One chance. <span className="text-white font-bold">Prove your logic.</span>
                     </p>
                 </div>
 
                 {/* Loading State */}
                 {!puzzleData && !completed && isAuthenticated ? (
-                    <div className="flex flex-col items-center justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
-                        <p className="text-gray-400">Loading today's challenge...</p>
+                    <div className="flex flex-col items-center justify-center py-32">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+                            <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full animate-pulse"></div>
+                        </div>
+                        <p className="mt-8 text-neutral-400 font-medium tracking-wide uppercase text-sm">Initializing System...</p>
                     </div>
                 ) : (
                     <AnimatePresence mode="wait">
                         {!isAuthenticated ? (
                             <motion.div
                                 key="login"
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                className="text-center p-12 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl"
+                                exit={{ opacity: 0, y: -30 }}
+                                className="text-center p-16 glass-panel rounded-[2.5rem] max-w-3xl mx-auto relative overflow-hidden group"
                             >
-                                <h2 className="text-2xl font-bold text-white mb-4">Ready to Play?</h2>
-                                <p className="text-gray-300 mb-8">Sign in to track your progress and compete on the leaderboard!</p>
-                                <Navigate to="/login" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <h2 className="relative text-3xl font-bold text-white mb-6">Enter the Arena</h2>
+                                <p className="relative text-neutral-300 mb-10 text-lg">Sign in to track your streak, earn points, and climb the global leaderboard.</p>
+                                <div className="relative">
+                                    <Navigate to="/login" />
+                                </div>
                             </motion.div>
                         ) : completed ? (
                             <motion.div
                                 key="completed"
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="bg-white/5 backdrop-blur-xl rounded-3xl p-10 border border-white/10 shadow-2xl text-center space-y-8 max-w-2xl mx-auto"
+                                className="glass-panel rounded-[2.5rem] p-12 text-center space-y-10 max-w-3xl mx-auto border border-accent/20 shadow-[0_0_50px_-10px_rgba(112,0,255,0.3)]"
                             >
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full animate-pulse"></div>
+                                    <img
+                                        src="/assets/3d-models/puzzle-success.png"
+                                        alt="Success!"
+                                        className="relative w-40 h-40 mx-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-float"
+                                    />
+                                </div>
+
                                 <div>
-                                    <h2 className="text-4xl font-bold text-white mb-2">Puzzle Completed!</h2>
-                                    <p className="text-gray-300 text-lg">Come back tomorrow for a new challenge.</p>
+                                    <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Mission Complete</h2>
+                                    <p className="text-neutral-300 text-xl">Excellent work, Agent. The system is secure.</p>
                                 </div>
 
-                                <div className="flex justify-center">
-                                    <NextPuzzleCountdown />
-                                </div>
-
-                                <div className="flex justify-center">
-                                    <StatsDisplay streak={user?.streak_count || 0} />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                                    <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                        <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
+                                        <NextPuzzleCountdown />
+                                    </div>
+                                    <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                        <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
+                                        <StatsDisplay streak={user?.streak_count || 0} />
+                                    </div>
                                 </div>
                             </motion.div>
                         ) : (
                             <motion.div
                                 key="game"
-                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5, type: 'spring' }}
-                                className="space-y-8"
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -40 }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                className="max-w-3xl mx-auto"
                             >
-                                <div className="relative bg-white/5 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 border border-white/10 shadow-2xl transition-transform duration-500 hover:scale-[1.01] hover:shadow-orange-500/5 group">
-                                    <div className="absolute top-6 right-8 opacity-90 group-hover:opacity-100 transition-opacity">
+                                {/* Main Puzzle Card */}
+                                <div className={`relative glass-card rounded-[2.5rem] p-8 md:p-12 transition-all duration-500 overflow-hidden
+                                        ${completed ? 'border-accent shadow-[0_0_50px_rgba(112,0,255,0.4)]' : 'shadow-2xl'}`}
+                                >
+                                    {/* Top Bar: Timer & Status */}
+                                    <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+                                            <span className="text-sm font-bold text-neutral-400 tracking-widest uppercase">
+                                                {mode === 'practice' ? 'Training Mode' : 'Live Mission'}
+                                            </span>
+                                        </div>
                                         <GameTimer
                                             startTime={startTime}
                                             isRunning={!completed}
                                         />
                                     </div>
 
-                                    <div className="mt-8 flex justify-center">
+                                    {/* Puzzle Area */}
+                                    <div className="flex justify-center min-h-[300px] items-center mb-10">
                                         <PuzzleRenderer
                                             puzzleData={puzzleData}
                                             puzzleType={puzzleType}
@@ -345,25 +375,53 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                             hintTrigger={hintTrigger}
                                         />
                                     </div>
+
+                                    {/* Controls Area (Integrated) */}
+                                    <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                        <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
+                                            <div className="text-left w-full md:w-auto">
+                                                <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">
+                                                    Mission Controls
+                                                </p>
+                                                <p className="text-sm text-neutral-300">
+                                                    {hintsRemaining} hint{hintsRemaining !== 1 ? 's' : ''} available
+                                                </p>
+                                            </div>
+
+                                            <div className="flex-1 w-full md:w-auto">
+                                                <GameControls
+                                                    onSubmit={handleSubmit}
+                                                    onHint={handleHint}
+                                                    hintsRemaining={hintsRemaining}
+                                                    disabled={completed}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Hint Alert Overlay */}
+                                    <AnimatePresence>
+                                        {hintText && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan px-6 py-3 rounded-full backdrop-blur-md shadow-lg z-20"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-lg">💡</span>
+                                                    <span className="text-sm font-bold">{hintText}</span>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
 
-                                <div className="max-w-xl mx-auto">
-                                    <GameControls
-                                        onSubmit={handleSubmit}
-                                        onHint={handleHint}
-                                        hintsRemaining={hintsRemaining}
-                                        disabled={completed}
-                                    />
-                                    {hintText && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0 }}
-                                            className="text-center text-blue-400 font-medium mt-4 bg-blue-500/10 py-2 rounded-lg"
-                                        >
-                                            {hintText}
-                                        </motion.div>
-                                    )}
+                                {/* Minimal Footer */}
+                                <div className="text-center mt-6">
+                                    <p className="text-neutral-500 text-xs uppercase tracking-widest">
+                                        {mode === 'practice' ? 'Practice makes perfect.' : 'Accuracy is key. Good luck.'}
+                                    </p>
                                 </div>
                             </motion.div>
                         )}

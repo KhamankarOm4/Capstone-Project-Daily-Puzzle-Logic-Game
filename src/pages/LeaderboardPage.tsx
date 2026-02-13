@@ -58,11 +58,11 @@ const LeaderboardPage = () => {
                             <table className="w-full">
                                 <thead>
                                     <tr className="border-b border-white/10">
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Rank</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Player</th>
-                                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Score</th>
-                                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Time</th>
-                                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Date</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-neutral-200">Rank</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-neutral-200">Player</th>
+                                        <th className="px-6 py-4 text-right text-sm font-bold text-neutral-200">Score</th>
+                                        <th className="px-6 py-4 text-right text-sm font-bold text-neutral-200">Time</th>
+                                        <th className="px-6 py-4 text-right text-sm font-bold text-neutral-200">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -77,9 +77,9 @@ const LeaderboardPage = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold
                                                     ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        index === 1 ? 'bg-gray-400/20 text-gray-300' :
+                                                        index === 1 ? 'bg-neutral-400/20 text-neutral-300' :
                                                             index === 2 ? 'bg-orange-500/20 text-orange-400' :
-                                                                'text-gray-500'}`}
+                                                                'text-neutral-500'}`}
                                                 >
                                                     {index + 1}
                                                 </div>
@@ -89,16 +89,16 @@ const LeaderboardPage = () => {
                                                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white/10">
                                                         {(entry.user_id || 'U').charAt(0).toUpperCase()}
                                                     </div>
-                                                    <span className="font-medium text-gray-200">User {entry.user_id.slice(-4)}</span>
+                                                    <span className="font-bold text-white">User {entry.user_id.slice(-4)}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-gray-200">
+                                            <td className="px-6 py-4 whitespace-nowrap text-right font-bold text-accent-glow">
                                                 {entry.score.toLocaleString()}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-gray-400">
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-neutral-300 font-medium">
                                                 {entry.time_taken}s
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-gray-400">
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-neutral-400 text-sm">
                                                 {new Date(entry.date).toLocaleDateString()}
                                             </td>
                                         </motion.tr>
