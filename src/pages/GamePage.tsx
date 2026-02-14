@@ -246,7 +246,8 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             setCompleted(true);
 
             // Submit to leaderboard (fire-and-forget)
-            const userId = localStorage.getItem('daily-puzzle-user') || 'guest';
+            // Prioritize logged-in user ID, fallback to local storage or guest
+            const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
             submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
 
             setShowModal(true);
