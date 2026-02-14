@@ -30,7 +30,7 @@ const Header = () => {
 
     const handleLogout = async () => {
         try {
-            await fetch('http://localhost:3001/auth/logout', { credentials: 'include' });
+            await fetch('/api/auth/logout', { credentials: 'include' });
         } catch (e) {
             console.error('Logout failed', e);
         }

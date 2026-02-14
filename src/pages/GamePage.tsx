@@ -220,7 +220,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             // Sync puzzle completion with backend ONLY if not practice
             if (mode !== 'practice') {
                 try {
-                    const response = await fetch('http://localhost:3001/api/puzzle/complete', {
+                    const response = await fetch('/api/puzzle/complete', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

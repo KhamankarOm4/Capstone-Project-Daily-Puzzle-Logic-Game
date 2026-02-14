@@ -17,7 +17,7 @@ const COLORS = ['#7000FF', '#00C2FF', '#FF0055', '#FFD700', '#00FF99', '#FFFFFF'
 const Confetti = ({ isActive }: { isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const particles = useRef<Particle[]>([]);
-    const animationId = useRef<number>();
+    const animationId = useRef<number | undefined>(undefined);
 
     const createParticles = (width: number, height: number) => {
         const particleCount = 150;

@@ -22,14 +22,14 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await fetch('http://localhost:3001/auth/user', {
+        const response = await fetch('/api/auth/user', {
           credentials: 'include',
         });
         if (response.ok) {
           const userData = await response.json();
           if (userData) {
             try {
-              const dashboardResponse = await fetch('http://localhost:3001/api/user/dashboard', {
+              const dashboardResponse = await fetch('/api/user/dashboard', {
                 credentials: 'include'
               });
               if (dashboardResponse.ok) {

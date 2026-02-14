@@ -3,7 +3,7 @@ import Button from '../components/ui/Button';
 
 const LoginPage = () => {
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:3001/auth/google';
+        window.location.href = '/api/auth/google';
     };
 
     return (
