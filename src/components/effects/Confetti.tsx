@@ -17,7 +17,8 @@ const COLORS = ['#7000FF', '#00C2FF', '#FF0055', '#FFD700', '#00FF99', '#FFFFFF'
 const Confetti = ({ isActive }: { isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const particles = useRef<Particle[]>([]);
-    const animationId = useRef(0);
+    // Explicitly typed useRef with initial value 0
+    const animId = useRef<number>(0);
 
     const createParticles = (width: number, height: number) => {
         const particleCount = 150;
@@ -87,7 +88,7 @@ const Confetti = ({ isActive }: { isActive: boolean }) => {
             particles.current = activeParticles;
 
             if (particles.current.length > 0) {
-                animationId.current = requestAnimationFrame(render);
+                animId.current = requestAnimationFrame(render);
             } else {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
@@ -97,7 +98,7 @@ const Confetti = ({ isActive }: { isActive: boolean }) => {
 
         return () => {
             window.removeEventListener('resize', resize);
-            if (animationId.current) cancelAnimationFrame(animationId.current);
+            if (animId.current) cancelAnimationFrame(animId.current);
         };
     }, [isActive]);
 
