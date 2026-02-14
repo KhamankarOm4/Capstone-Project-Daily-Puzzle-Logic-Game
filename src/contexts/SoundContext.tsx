@@ -72,7 +72,8 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const ctx = getAudioContext();
         if (ctx.state === 'suspended') ctx.resume();
 
-        const now = ctx.currentTime;
+        if (ctx.state === 'suspended') ctx.resume();
+
         [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { // C Major: C E G C
             playTone(freq, 'sine', 0.3, i * 0.1, 0.1);
         });

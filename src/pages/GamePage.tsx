@@ -23,6 +23,7 @@ import { calculateScore } from '../utils/scoring';
 import { submitScore } from '../api/leaderboard';
 import { updateUser } from '../features/user/userSlice';
 import HelpModal from '../components/HelpModal';
+import { useSound } from '../contexts/SoundContext';
 
 // Separate component that renders a puzzle — keeps hooks stable
 const PuzzleRenderer = ({
@@ -56,6 +57,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     const { guesses } = useAppSelector((state) => state.puzzle);
     const [showModal, setShowModal] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const { playClick, playSuccess, playError, playPop } = useSound();
 
     // Restore local state
     const [puzzleData, setPuzzleData] = useState<any>(null);
@@ -153,14 +155,17 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     }, [dispatch, todayDate, user, isAuthenticated, mode, practiceId]);
 
     const handleHint = () => {
+        playClick();
         if (hintsRemaining > 0) {
             useHint(puzzleData, puzzleType);
             setHintsRemaining(getHintsRemaining());
             setHintTrigger(prev => prev + 1);
             setHintText("Hint applied! A cell has been revealed.");
+            playPop();
             setTimeout(() => setHintText(null), 3000);
         } else {
             setHintText('No hints remaining for today!');
+            playError();
             setTimeout(() => setHintText(null), 3000);
         }
     };
@@ -181,6 +186,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     }, [user, mode]);
 
     const handleSubmit = async () => {
+        playClick();
         if (!currentInput) return;
 
         let engine;
@@ -202,6 +208,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
         const isCorrect = (engine as any).validate(currentInput, solutionToValidate);
 
         if (isCorrect) {
+            playSuccess();
             // Calculate hints used based on remaining hints
             const hintsUsed = 3 - hintsRemaining;
             const score = calculateScore(getElapsedSeconds(), hintsUsed, mode === 'practice');
@@ -255,12 +262,14 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
             setShowModal(true);
         } else {
+            playError();
             recordDayActivity(false);
             alert('Incorrect solution. Try again!');
         }
     };
 
     const handleCloseModal = () => {
+        playClick();
         setShowModal(false);
     };
 
@@ -270,6 +279,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     };
 
     const handleShare = async () => {
+        playClick();
         if (!scoreResult) return;
 
         const date = new Date().toLocaleDateString();
@@ -298,7 +308,10 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
                     {/* Help Button - Added absolute positioning */}
                     <button
-                        onClick={() => setShowHelp(true)}
+                        onClick={() => {
+                            playClick();
+                            setShowHelp(true);
+                        }}
                         className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
                         title="How to Play"
                     >
@@ -365,13 +378,19 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                     <div className="flex flex-col gap-4 items-center">
                                         <div className="flex justify-center gap-4">
                                             <button
-                                                onClick={() => window.location.href = '/practice'}
+                                                onClick={() => {
+                                                    playClick();
+                                                    window.location.href = '/practice';
+                                                }}
                                                 className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
                                             >
                                                 Back to Lab
                                             </button>
                                             <button
-                                                onClick={() => window.location.reload()}
+                                                onClick={() => {
+                                                    playClick();
+                                                    window.location.reload();
+                                                }}
                                                 className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
                                             >
                                                 Replay Logic

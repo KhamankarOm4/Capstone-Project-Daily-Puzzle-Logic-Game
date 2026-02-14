@@ -4,6 +4,7 @@ import { logout } from '../features/user/userSlice';
 import { useState, useRef, useEffect } from 'react';
 import { Suspense, lazy } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import SettingsModal from './SettingsModal';
 
 const ProfileModal = lazy(() => import('./ProfileModal'));
 
@@ -13,6 +14,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -47,7 +49,7 @@ const Header = () => {
         <header className="sticky top-4 z-50 px-4 mb-4">
             <div className="max-w-4xl mx-auto rounded-full bg-surface-100 backdrop-blur-xl border border-white/10 shadow-lg px-6 py-3 flex justify-between items-center transition-all duration-300 hover:border-white/20 hover:shadow-accent/5 relative group/header">
 
-                {/* Subtle sheen effect - Adjusted to not need overflow-hidden on parent if possible, or move it */}
+                {/* Subtle sheen effect */}
                 <div className="absolute inset-0 rounded-full overflow-hidden pointer-events-none">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/header:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                 </div>
@@ -74,6 +76,18 @@ const Header = () => {
 
                 {/* Right Side: Stats & Profile */}
                 <div className="flex items-center gap-4 relative z-10">
+                    {/* Settings Button */}
+                    <button
+                        onClick={() => setIsSettingsOpen(true)}
+                        className="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                        title="Settings"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+
                     {/* Streak Badge */}
                     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/40 border border-white/5 hover:border-accent/20 transition-colors group relative overflow-hidden">
                         <div className="absolute inset-0 bg-accent/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
@@ -185,6 +199,7 @@ const Header = () => {
 
             <Suspense fallback={null}>
                 {user && <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />}
+                <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
             </Suspense>
         </header>
     );

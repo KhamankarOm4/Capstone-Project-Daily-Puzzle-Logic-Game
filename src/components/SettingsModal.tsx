@@ -73,7 +73,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                             <div className="pt-6 border-t border-white/5 text-center">
                                 <p className="text-xs text-neutral-500">
                                     Daily Puzzle v1.0 <br />
-                                    Designed by <span className="text-accent">Antigravity</span>
+                                    Designed by <span className="text-accent">OmKhamankar</span>
                                 </p>
                             </div>
                         </div>
