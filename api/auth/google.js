@@ -6,6 +6,6 @@ export default function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const url = getGoogleAuthURL();
+    const url = getGoogleAuthURL(req.headers.host);
     res.redirect(url);
 }

@@ -6,10 +6,28 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
 const REDIRECT_URI = `${BASE_URL}/api/auth/google/callback`;
 
-export function getGoogleAuthURL() {
+export function getRedirectUri(host) {
+    let currentRedirectUri = REDIRECT_URI;
+    if (host && !process.env.VERCEL_URL) {
+        // If we are getting a specific host (like localhost:3001) and not in Vercel Prod
+        const protocol = host.includes('localhost') ? 'http' : 'https';
+        currentRedirectUri = `${protocol}://${host}/api/auth/google/callback`;
+        console.log('Dynamic Redirect URI:', currentRedirectUri);
+    }
+    return currentRedirectUri;
+}
+
+export function getGoogleAuthURL(host) {
+    const currentRedirectUri = getRedirectUri(host);
     const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+    console.log('--- Google Auth Debug ---');
+    console.log('Client ID:', GOOGLE_CLIENT_ID ? (GOOGLE_CLIENT_ID.substring(0, 10) + '...') : 'UNDEFINED');
+    console.log('Redirect URI:', REDIRECT_URI);
+    console.log('-------------------------');
+
     const options = {
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: currentRedirectUri,
         client_id: GOOGLE_CLIENT_ID,
         access_type: 'offline',
         response_type: 'code',
@@ -24,13 +42,13 @@ export function getGoogleAuthURL() {
     return `${rootUrl}?${qs.toString()}`;
 }
 
-export async function getGoogleUser(code) {
+export async function getGoogleUser(code, redirectUri = REDIRECT_URI) {
     const tokenUrl = 'https://oauth2.googleapis.com/token';
     const values = {
         code,
         client_id: GOOGLE_CLIENT_ID,
         client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: redirectUri,
         grant_type: 'authorization_code',
     };
 

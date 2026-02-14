@@ -1,7 +1,6 @@
-
-import { getGoogleUser } from '../_lib/google.js';
-import prisma from '../_lib/prisma.js';
-import { generateToken, setTokenCookie } from '../_lib/auth.js';
+import { getGoogleUser, getRedirectUri } from '../../_lib/google.js';
+import prisma from '../../_lib/prisma.js';
+import { generateToken, setTokenCookie } from '../../_lib/auth.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -15,7 +14,8 @@ export default async function handler(req, res) {
     }
 
     try {
-        const googleUser = await getGoogleUser(code);
+        const redirectUri = getRedirectUri(req.headers.host);
+        const googleUser = await getGoogleUser(code, redirectUri);
         const { email, name, picture } = googleUser;
 
         let user = await prisma.user.findUnique({
