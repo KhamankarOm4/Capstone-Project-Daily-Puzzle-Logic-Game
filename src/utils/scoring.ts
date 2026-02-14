@@ -1,71 +1,69 @@
-import { getHintsUsed } from './hintSystem';
-
-const BASE_SCORE = 1000;
-const TIME_PENALTY_PER_SECOND = 2;    // −2 points per second
-const HINT_PENALTY = 100;              // −100 points per hint
-const MAX_TIME_PENALTY = 600;          // Cap at 5 minutes worth
-const PERFECT_BONUS = 200;             // Bonus for no hints + under 60s
 
 export interface ScoreBreakdown {
     baseScore: number;
+    timeSeconds: number;
     timePenalty: number;
+    hintsUsed: number;
     hintPenalty: number;
     perfectBonus: number;
     finalScore: number;
-    timeSeconds: number;
-    hintsUsed: number;
-    grade: string;          // S, A, B, C, D
-    gradeColor: string;     // Tailwind color class
+    grade: string;
+    gradeColor: string;
 }
 
-// Calculate score after puzzle completion
-export const calculateScore = (timeSeconds: number, isPractice = false): ScoreBreakdown => {
-    if (isPractice) {
-        return {
-            baseScore: 100,
-            timePenalty: 0,
-            hintPenalty: 0,
-            perfectBonus: 0,
-            finalScore: 100,
-            timeSeconds,
-            hintsUsed: 0,
-            grade: 'P',
-            gradeColor: 'text-blue-500'
-        };
+export const defaultCalculateScore = (timeSeconds: number, hintsUsed: number): number => {
+    // Legacy support wrapper
+    return calculateScore(timeSeconds, hintsUsed).finalScore;
+};
+
+export const calculateScore = (timeSeconds: number, hintsUsed: number, isPractice: boolean = false): ScoreBreakdown => {
+    const baseScore = 1000;
+
+    // Time penalty: -1 point per second (capped at 500)
+    const timePenalty = Math.min(500, Math.floor(timeSeconds * 1));
+
+    // Hint penalty: -150 points per hint
+    const hintPenalty = hintsUsed * 150;
+
+    // Perfect bonus: +200 if no hints and under 2 minutes (120s)
+    let perfectBonus = 0;
+    if (hintsUsed === 0 && timeSeconds < 120) {
+        perfectBonus = 200;
     }
 
-    const hintsUsed = getHintsUsed();
+    let finalScore = baseScore - timePenalty - hintPenalty + perfectBonus;
+    if (finalScore < 0) finalScore = 0;
 
-    const timePenalty = Math.min(timeSeconds * TIME_PENALTY_PER_SECOND, MAX_TIME_PENALTY);
-    const hintPenalty = hintsUsed * HINT_PENALTY;
-    const perfectBonus = (hintsUsed === 0 && timeSeconds < 60) ? PERFECT_BONUS : 0;
+    // Determine Grade
+    let grade = 'C';
+    let gradeColor = 'text-gray-400';
 
-    const finalScore = Math.max(0, BASE_SCORE - timePenalty - hintPenalty + perfectBonus);
-
-    const grade = getGrade(finalScore);
+    if (finalScore >= 1100) {
+        grade = 'S';
+        gradeColor = 'text-yellow-400';
+    } else if (finalScore >= 900) {
+        grade = 'A';
+        gradeColor = 'text-green-500';
+    } else if (finalScore >= 700) {
+        grade = 'B';
+        gradeColor = 'text-blue-500';
+    } else if (finalScore >= 500) {
+        grade = 'C';
+        gradeColor = 'text-orange-500';
+    } else {
+        grade = 'D';
+        gradeColor = 'text-red-500';
+    }
 
     return {
-        baseScore: BASE_SCORE,
-        timePenalty: Math.round(timePenalty),
+        baseScore,
+        timeSeconds,
+        timePenalty,
+        hintsUsed,
         hintPenalty,
         perfectBonus,
-        finalScore: Math.round(finalScore),
-        timeSeconds,
-        hintsUsed,
-        grade: grade.letter,
-        gradeColor: grade.color
+        finalScore,
+        grade,
+        gradeColor
     };
-};
-
-const getGrade = (score: number): { letter: string; color: string } => {
-    if (score >= 1100) return { letter: 'S', color: 'text-yellow-500' };  // Perfect + bonus
-    if (score >= 900) return { letter: 'A', color: 'text-green-500' };
-    if (score >= 700) return { letter: 'B', color: 'text-blue-500' };
-    if (score >= 400) return { letter: 'C', color: 'text-orange-500' };
-    return { letter: 'D', color: 'text-red-500' };
-};
-
-// Format score for display
-export const formatScore = (score: number): string => {
-    return score.toLocaleString();
 };

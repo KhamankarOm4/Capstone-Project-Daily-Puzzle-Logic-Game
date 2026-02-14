@@ -56,16 +56,4 @@ export interface PuzzleEngine<TData, TSolution, TInput> extends PuzzleLogic<TDat
     render: FC<PuzzleProps<TData, TSolution, TInput>>;
 }
 
-// Default score calculator
-export const defaultCalculateScore = (timeSeconds: number, hintsUsed: number): number => {
-    // Base score 1000
-    let score = 1000;
-
-    // Time penalty: -1 point per second
-    score -= timeSeconds;
-
-    // Hint penalty: -100 points per hint
-    score -= (hintsUsed * 100);
-
-    return Math.max(0, score);
-};
+// Default score calculator moved to utils/scoring.ts

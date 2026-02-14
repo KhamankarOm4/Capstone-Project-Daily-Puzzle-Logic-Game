@@ -5,10 +5,14 @@ import App from './App.tsx'
 import { Provider } from 'react-redux'
 import { store } from './store'
 
+import { ErrorBoundary } from './components/ErrorBoundary';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </ErrorBoundary>
   </StrictMode>,
 )

@@ -200,7 +200,9 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
         const isCorrect = (engine as any).validate(currentInput, solutionToValidate);
 
         if (isCorrect) {
-            const score = calculateScore(getElapsedSeconds(), mode === 'practice');
+            // Calculate hints used based on remaining hints
+            const hintsUsed = 3 - hintsRemaining;
+            const score = calculateScore(getElapsedSeconds(), hintsUsed, mode === 'practice');
             setScoreResult(score);
 
             // Sync puzzle completion with backend ONLY if not practice

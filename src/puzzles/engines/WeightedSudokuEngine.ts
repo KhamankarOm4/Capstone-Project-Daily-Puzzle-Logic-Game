@@ -1,4 +1,5 @@
-import { type PuzzleLogic, type PuzzleInstance, defaultCalculateScore } from '../PuzzleEngine';
+import { type PuzzleLogic, type PuzzleInstance } from '../PuzzleEngine';
+import { defaultCalculateScore } from '../../utils/scoring';
 
 // Types
 export type Grid4x4 = number[][]; // 0 for empty, 1-4 for values

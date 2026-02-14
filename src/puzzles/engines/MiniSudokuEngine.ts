@@ -1,4 +1,5 @@
-import { PuzzleLogic, PuzzleInstance, defaultCalculateScore } from '../PuzzleEngine';
+import { type PuzzleLogic, type PuzzleInstance } from '../PuzzleEngine';
+import { defaultCalculateScore } from '../../utils/scoring';
 
 export type SudokuGrid = (number | null)[][];
 
