@@ -1,13 +1,4 @@
 
-
-interface GameControlsProps {
-    onHint: () => void;
-    onSubmit: () => void;
-    canSubmit?: boolean; // made optional to avoid breaking changes if strict
-    disabled?: boolean;
-    hintsRemaining?: number;
-}
-
 import Button from './ui/Button';
 
 interface GameControlsProps {
@@ -20,39 +11,55 @@ interface GameControlsProps {
 
 const GameControls = ({ onHint, onSubmit, canSubmit = true, disabled = false, hintsRemaining }: GameControlsProps) => {
     return (
-        <div className="flex flex-col items-center gap-4">
-            <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+            {/* Hint Button */}
+            <div className="w-full md:w-auto">
                 <Button
                     onClick={onHint}
                     disabled={disabled || (hintsRemaining !== undefined && hintsRemaining <= 0)}
-                    variant="primary"
-                    size="lg"
-                    className="!bg-gradient-to-r !from-yellow-400 !to-orange-500 !shadow-orange-500/30 font-bold"
+                    variant="ghost"
+                    size="md"
+                    className={`
+                        !text-neutral-400 hover:!text-accent-cyan hover:!bg-accent-cyan/10 border border-transparent hover:border-accent-cyan/20 transition-all duration-300
+                        ${(hintsRemaining === 0) ? '!opacity-50 !grayscale' : ''}
+                    `}
                     leftIcon={
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                         </svg>
                     }
                 >
-                    Hint {hintsRemaining !== undefined && `(${hintsRemaining})`}
+                    <span className="font-medium">Hint</span>
+                    {hintsRemaining !== undefined && (
+                        <span className="ml-2 text-xs opacity-70">
+                            ({hintsRemaining})
+                        </span>
+                    )}
                 </Button>
+            </div>
 
+            {/* Submit Button */}
+            <div className="flex-1 w-full">
                 <Button
                     onClick={onSubmit}
                     disabled={disabled || !canSubmit}
                     variant="primary"
                     size="lg"
-                    className={!disabled && canSubmit
-                        ? "!bg-gradient-to-r !from-green-500 !to-emerald-600 !shadow-emerald-500/30"
-                        : "!bg-gray-300 !text-gray-500 !shadow-none !border-none cursor-not-allowed"
-                    }
-                    leftIcon={
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    fullWidth
+                    className={`
+                        relative group overflow-hidden !rounded-xl
+                        ${!disabled && canSubmit
+                            ? "!bg-white !text-black hover:!bg-neutral-200 !shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:!shadow-[0_0_30px_rgba(255,255,255,0.25)] border-none"
+                            : "!bg-white/5 !text-white/20 !shadow-none !border border-white/5 cursor-not-allowed"
+                        }
+                    `}
+                    rightIcon={
+                        <svg className={`w-5 h-5 transition-transform duration-300 ${!disabled && canSubmit ? 'group-hover:translate-x-1' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
                         </svg>
                     }
                 >
-                    Submit Answer
+                    <span className="text-base font-bold tracking-wide uppercase">Submit</span>
                 </Button>
             </div>
         </div>

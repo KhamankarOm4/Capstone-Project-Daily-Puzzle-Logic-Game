@@ -24,6 +24,7 @@ import { submitScore } from '../api/leaderboard';
 import { updateUser } from '../features/user/userSlice';
 import HelpModal from '../components/HelpModal';
 import { useSound } from '../contexts/SoundContext';
+import Confetti from '../components/effects/Confetti';
 
 // Separate component that renders a puzzle — keeps hooks stable
 const PuzzleRenderer = ({
@@ -71,6 +72,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     const [hintText, setHintText] = useState<string | null>(null);
     const [scoreResult, setScoreResult] = useState<any>(null);
     const [showCelebration, setShowCelebration] = useState(false);
+    const [shakeKey, setShakeKey] = useState(0); // Key to trigger shake animation
     const todayDate = getTodayDateString();
 
     // Auto-save current progress
@@ -165,6 +167,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             setTimeout(() => setHintText(null), 3000);
         } else {
             setHintText('No hints remaining for today!');
+            setShakeKey(prev => prev + 1);
             playError();
             setTimeout(() => setHintText(null), 3000);
         }
@@ -240,11 +243,9 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                     } else {
                         const errData = await response.json().catch(() => ({}));
                         console.error('Failed to sync. Status:', response.status, errData);
-                        // alert(`Score not saved! Server error: ${response.status}\nDetails: ${errData.details || errData.error || 'Unknown'}`);
                     }
                 } catch (error) {
                     console.error('Failed to sync puzzle completion:', error);
-                    // alert('Connection error. Score not saved.');
                 }
 
                 dispatch(recordWin(guesses.length));
@@ -259,12 +260,13 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
             setCompleted(true);
             setShowModal(true);
-
-            setShowModal(true);
         } else {
             playError();
+            setShakeKey(prev => prev + 1); // Trigger shake
             recordDayActivity(false);
-            alert('Incorrect solution. Try again!');
+            // alert('Incorrect solution. Try again!'); // Removed alert in favor of visual feedback
+            setHintText("Incorrect. Check your logic and try again.");
+            setTimeout(() => setHintText(null), 3000);
         }
     };
 
@@ -299,6 +301,9 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     return (
         <Layout>
             <div className="w-full max-w-5xl mx-auto space-y-12">
+                {/* Global Confetti */}
+                <Confetti isActive={completed} />
+
                 {/* Header Section */}
                 <div className="text-center space-y-4 relative">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-accent/20 blur-[100px] rounded-full pointer-events-none"></div>
@@ -438,7 +443,11 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                 className="max-w-3xl mx-auto"
                             >
                                 {/* Main Puzzle Card */}
-                                <div className={`relative glass-card rounded-[2.5rem] p-8 md:p-12 transition-all duration-500 overflow-hidden
+                                <motion.div
+                                    key={`card-${shakeKey}`}
+                                    animate={shakeKey > 0 ? { x: [-10, 10, -10, 10, -5, 5, 0] } : {}}
+                                    transition={{ duration: 0.4 }}
+                                    className={`relative glass-card rounded-[2.5rem] p-8 md:p-12 transition-all duration-500 overflow-hidden
                                         ${completed ? 'border-accent shadow-[0_0_50px_rgba(112,0,255,0.4)]' : 'shadow-2xl'}`}
                                 >
                                     {/* Top Bar: Timer & Status */}
@@ -497,16 +506,21 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 10 }}
-                                                className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan px-6 py-3 rounded-full backdrop-blur-md shadow-lg z-20"
+                                                className={`absolute bottom-24 left-1/2 -translate-x-1/2 border px-6 py-3 rounded-full backdrop-blur-md shadow-lg z-20 
+                                                    ${hintText.includes('Incorrect') || hintText.includes('No hints')
+                                                        ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                                                        : 'bg-accent-cyan/10 border-accent-cyan/30 text-accent-cyan'}`}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-lg">💡</span>
+                                                    <span className="text-lg">
+                                                        {hintText.includes('Incorrect') || hintText.includes('No hints') ? '⚠️' : '💡'}
+                                                    </span>
                                                     <span className="text-sm font-bold">{hintText}</span>
                                                 </div>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
-                                </div>
+                                </motion.div>
 
                                 {/* Minimal Footer */}
                                 <div className="text-center mt-6">
