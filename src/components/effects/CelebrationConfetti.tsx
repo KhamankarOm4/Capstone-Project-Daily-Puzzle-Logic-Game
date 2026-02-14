@@ -18,7 +18,7 @@ const Confetti = ({ isActive }: { isActive: boolean }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const particles = useRef<Particle[]>([]);
     // Explicitly typed useRef with initial value 0
-    const animId = useRef<number>(0);
+    const animId = useRef<number | null>(null);
 
     const createParticles = (width: number, height: number) => {
         const particleCount = 150;
@@ -98,7 +98,7 @@ const Confetti = ({ isActive }: { isActive: boolean }) => {
 
         return () => {
             window.removeEventListener('resize', resize);
-            if (animId.current) cancelAnimationFrame(animId.current);
+            if (animId.current !== null) cancelAnimationFrame(animId.current);
         };
     }, [isActive]);
 
