@@ -87,15 +87,11 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                 if (mode === 'practice' && practiceId) {
                     const puzzle = practicePuzzles.find(p => p.id === practiceId);
                     if (puzzle) {
-                        // FIX: Wrap in expected data structure (grid + initialGrid)
-                        // Engine expects { grid: ..., initialGrid: ... }
-                        setPuzzleData({
-                            grid: puzzle.initialBoard.map(row => [...row]),
-                            initialGrid: puzzle.initialBoard.map(row => [...row])
-                        });
-                        setPuzzleSolution({ grid: puzzle.solution }); // Also fix solution structure if needed
+                        setPuzzleData(puzzle.data);
+                        setPuzzleSolution(puzzle.solution);
                         setPuzzleType(puzzle.type);
                         setCompleted(false);
+                        setStartTime(Date.now()); // Reset timer
                     } else {
                         alert('Puzzle not found!');
                     }
@@ -207,48 +203,51 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             const score = calculateScore(getElapsedSeconds(), mode === 'practice');
             setScoreResult(score);
 
-            // Sync puzzle completion with backend
-            try {
-                const response = await fetch('http://localhost:3001/api/puzzle/complete', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ score: score.finalScore }),
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    dispatch(updateUser({
-                        streak_count: data.streak,
-                        total_points: data.total_points
-                    }));
+            // Sync puzzle completion with backend ONLY if not practice
+            if (mode !== 'practice') {
+                try {
+                    const response = await fetch('http://localhost:3001/api/puzzle/complete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ score: score.finalScore }),
+                        credentials: 'include',
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        dispatch(updateUser({
+                            streak_count: data.streak,
+                            total_points: data.total_points
+                        }));
 
-                    // Trigger celebration if streak >= 2
-                    if (data.streak >= 2) {
-                        setShowCelebration(true);
-                        setTimeout(() => setShowCelebration(false), 4000);
+                        // Trigger celebration if streak >= 2
+                        if (data.streak >= 2) {
+                            setShowCelebration(true);
+                            setTimeout(() => setShowCelebration(false), 4000);
+                        }
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        console.error('Failed to sync. Status:', response.status, errData);
+                        // alert(`Score not saved! Server error: ${response.status}\nDetails: ${errData.details || errData.error || 'Unknown'}`);
                     }
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    console.error('Failed to sync. Status:', response.status, errData);
-                    alert(`Score not saved! Server error: ${response.status}\nDetails: ${errData.details || errData.error || 'Unknown'}`);
+                } catch (error) {
+                    console.error('Failed to sync puzzle completion:', error);
+                    // alert('Connection error. Score not saved.');
                 }
-            } catch (error) {
-                console.error('Failed to sync puzzle completion:', error);
-                alert('Connection error. Score not saved.');
+
+                dispatch(recordWin(guesses.length));
+                recordDayActivity(true);
+
+                markTodayCompleted(true, 1);
+
+                // Submit to leaderboard (fire-and-forget)
+                const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
+                submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
             }
 
-            dispatch(recordWin(guesses.length));
-            recordDayActivity(true);
-
-            markTodayCompleted(true, 1);
             setCompleted(true);
-
-            // Submit to leaderboard (fire-and-forget)
-            // Prioritize logged-in user ID, fallback to local storage or guest
-            const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
-            submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
+            setShowModal(true);
 
             setShowModal(true);
         } else {
@@ -324,19 +323,38 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
                                 <div>
                                     <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Mission Complete</h2>
-                                    <p className="text-neutral-300 text-xl">Excellent work, Agent. The system is secure.</p>
+                                    <p className="text-neutral-300 text-xl">
+                                        {mode === 'practice' ? 'Great practice session! Ready for more?' : 'Excellent work, Agent. The system is secure.'}
+                                    </p>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-                                    <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                        <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
-                                        <NextPuzzleCountdown />
+                                {mode === 'practice' ? (
+                                    <div className="flex justify-center gap-4">
+                                        <button
+                                            onClick={() => window.location.href = '/practice'}
+                                            className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
+                                        >
+                                            Back to Lab
+                                        </button>
+                                        <button
+                                            onClick={() => window.location.reload()}
+                                            className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
+                                        >
+                                            Replay Logic
+                                        </button>
                                     </div>
-                                    <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                        <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
-                                        <StatsDisplay streak={user?.streak_count || 0} />
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
+                                            <NextPuzzleCountdown />
+                                        </div>
+                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
+                                            <StatsDisplay streak={user?.streak_count || 0} />
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </motion.div>
                         ) : (
                             <motion.div
