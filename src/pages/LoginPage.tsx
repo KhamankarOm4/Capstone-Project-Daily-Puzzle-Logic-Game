@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import Button from '../components/ui/Button';
 
 const LoginPage = () => {
-    const handleGoogleLogin = () => {
-        window.location.href = '/api/auth/google';
-    };
+   const handleGoogleLogin = () => {
+    window.location.href = '/api/auth/signin/google';
+   };
 
     return (
         <div
