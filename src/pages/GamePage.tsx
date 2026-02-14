@@ -165,7 +165,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
 
     // React to server user data for completion status
     useEffect(() => {
-        if (user?.last_played) {
+        if (mode !== 'practice' && user?.last_played) {
             const lastPlayedDate = new Date(user.last_played);
             const today = new Date();
             if (
@@ -176,7 +176,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                 setCompleted(true);
             }
         }
-    }, [user]);
+    }, [user, mode]);
 
     const handleSubmit = async () => {
         if (!currentInput) return;
