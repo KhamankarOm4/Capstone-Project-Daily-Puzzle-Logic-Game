@@ -188,7 +188,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             const puzzle = practicePuzzles.find(p => p.id === practiceId);
             if (!puzzle) return;
             engine = getPuzzleEngine(puzzle.type);
-            solutionToValidate = { grid: puzzle.solution };
+            solutionToValidate = puzzle.solution;
         } else {
             const seed = getDailySeed();
             const type = selectPuzzleForDay(seed);
