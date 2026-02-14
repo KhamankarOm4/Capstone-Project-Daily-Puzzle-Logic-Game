@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { type PuzzleProps } from './PuzzleEngine';
-import { type RotatingPatternData, type RotatingPatternSolution, type RotatingPatternInput, type Shape, type Color, type ShapeType } from './engines/RotatingPatternEngine';
+import { type RotatingPatternData, type RotatingPatternSolution, type RotatingPatternInput, type Shape, type Color } from './engines/RotatingPatternEngine';
 
 export const RotatingPatternRenderer = ({ data, onInput, disabled, solution, hintTrigger }: PuzzleProps<RotatingPatternData, RotatingPatternSolution, RotatingPatternInput>) => {
     const [selected, setSelected] = useState<number | null>(null);

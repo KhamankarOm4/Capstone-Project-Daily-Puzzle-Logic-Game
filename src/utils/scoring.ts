@@ -16,7 +16,7 @@ export const defaultCalculateScore = (timeSeconds: number, hintsUsed: number): n
     return calculateScore(timeSeconds, hintsUsed).finalScore;
 };
 
-export const calculateScore = (timeSeconds: number, hintsUsed: number, isPractice: boolean = false): ScoreBreakdown => {
+export const calculateScore = (timeSeconds: number, hintsUsed: number, _isPractice: boolean = false): ScoreBreakdown => {
     const baseScore = 1000;
 
     // Time penalty: -1 point per second (capped at 500)
