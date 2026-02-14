@@ -24,7 +24,7 @@ import { submitScore } from '../api/leaderboard';
 import { updateUser } from '../features/user/userSlice';
 import HelpModal from '../components/HelpModal';
 import { useSound } from '../contexts/SoundContext';
-import Confetti from '../components/effects/Confetti';
+import CelebrationConfetti from '../components/effects/CelebrationConfetti';
 
 // Separate component that renders a puzzle — keeps hooks stable
 const PuzzleRenderer = ({
@@ -302,7 +302,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
         <Layout>
             <div className="w-full max-w-5xl mx-auto space-y-12">
                 {/* Global Confetti */}
-                <Confetti isActive={completed} />
+                <CelebrationConfetti isActive={completed} />
 
                 {/* Header Section */}
                 <div className="text-center space-y-4 relative">
