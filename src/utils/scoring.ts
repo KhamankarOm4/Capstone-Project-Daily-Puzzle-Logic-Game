@@ -17,6 +17,21 @@ export const defaultCalculateScore = (timeSeconds: number, hintsUsed: number): n
 };
 
 export const calculateScore = (timeSeconds: number, hintsUsed: number, _isPractice: boolean = false): ScoreBreakdown => {
+    // Practice mode: Fixed 100 points, no penalties
+    if (_isPractice) {
+        return {
+            baseScore: 100,
+            timeSeconds,
+            timePenalty: 0,
+            hintsUsed,
+            hintPenalty: 0,
+            perfectBonus: 0,
+            finalScore: 100,
+            grade: 'P',
+            gradeColor: 'text-blue-400'
+        };
+    }
+
     const baseScore = 1000;
 
     // Time penalty: -1 point per second (capped at 500)

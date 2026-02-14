@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { successPop, successGrade } from './animations';
 import type { ScoreBreakdown } from '../utils/scoring';
+import { useState } from 'react';
 
 interface ResultModalProps {
     onClose: () => void;
@@ -10,6 +11,25 @@ interface ResultModalProps {
 }
 
 const ResultModal = ({ onClose, isWin, score, streak }: ResultModalProps) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleShare = async () => {
+        if (!score) return;
+
+        const date = new Date().toLocaleDateString();
+        const emoji = score.finalScore > 900 ? '🤩' : score.finalScore > 700 ? '😎' : '🤔';
+
+        const shareText = `Logic Looper Daily #${date}\nScore: ${score.finalScore} ${emoji}\nTime: ${score.timeSeconds}s\nStreak: ${streak} 🔥\n\nCan you beat my score? Play at: logic-looper.com`;
+
+        try {
+            await navigator.clipboard.writeText(shareText);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy', err);
+        }
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -32,7 +52,7 @@ const ResultModal = ({ onClose, isWin, score, streak }: ResultModalProps) => {
                     {isWin ? '🎉' : '😅'}
                 </motion.div>
 
-                <h2 className={`text - 3xl font - bold mb - 2 ${isWin ? 'text-green-600' : 'text-orange-600'} `}>
+                <h2 className={`text-3xl font-bold mb-2 ${isWin ? 'text-green-600' : 'text-orange-600'} `}>
                     {isWin ? 'Amazing!' : 'Not Quite!'}
                 </h2>
 
@@ -63,7 +83,7 @@ const ResultModal = ({ onClose, isWin, score, streak }: ResultModalProps) => {
                             animate="visible"
                             className="mb-4"
                         >
-                            <span className={`text - 7xl font - black ${score.gradeColor} `}>
+                            <span className={`text-7xl font-black ${score.gradeColor} `}>
                                 {score.grade}
                             </span>
                         </motion.div>
@@ -113,17 +133,37 @@ const ResultModal = ({ onClose, isWin, score, streak }: ResultModalProps) => {
                     </div>
                 )}
 
-                <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.7 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onClose}
-                    className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow"
-                >
-                    {isWin ? 'Done' : 'Try Again'}
-                </motion.button>
+                <div className="flex flex-col gap-3">
+                    <motion.button
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={onClose}
+                        className="w-full px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                    >
+                        {isWin ? 'Done' : 'Try Again'}
+                    </motion.button>
+
+                    {isWin && (
+                        <motion.button
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.8 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={handleShare}
+                            className="w-full px-8 py-3 bg-gray-100 text-gray-700 text-lg font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                        >
+                            {copied ? (
+                                <><span>✅</span> Copied!</>
+                            ) : (
+                                <><span>📤</span> Share Result</>
+                            )}
+                        </motion.button>
+                    )}
+                </div>
             </motion.div>
         </motion.div>
     );

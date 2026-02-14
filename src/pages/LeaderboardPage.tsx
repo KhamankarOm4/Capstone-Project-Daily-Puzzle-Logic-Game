@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchLeaderboard, type LeaderboardEntry } from '../utils/leaderboardApi';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../store/hooks';
+import ActivityHeatmap from '../components/ActivityHeatmap';
 
 const LeaderboardPage = () => {
     const { user } = useAppSelector((state) => state.user);
@@ -44,9 +45,15 @@ const LeaderboardPage = () => {
         );
     }
 
+
+
     return (
         <Layout>
             <div className="w-full max-w-3xl mx-auto space-y-8">
+                {/* Activity Heatmap Section */}
+                <div className="bg-white/5 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/10 p-6">
+                    <ActivityHeatmap />
+                </div>
                 <div className=" bg-white/5 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/10">
                     <div className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 px-8 py-6 border-b border-white/10">
                         <h1 className="text-3xl font-bold text-white flex items-center gap-3">

@@ -22,6 +22,7 @@ import { useHint, getHintsRemaining } from '../utils/hintSystem';
 import { calculateScore } from '../utils/scoring';
 import { submitScore } from '../api/leaderboard';
 import { updateUser } from '../features/user/userSlice';
+import HelpModal from '../components/HelpModal';
 
 // Separate component that renders a puzzle — keeps hooks stable
 const PuzzleRenderer = ({
@@ -54,6 +55,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
     const { user, isAuthenticated } = useAppSelector((state) => state.user);
     const { guesses } = useAppSelector((state) => state.puzzle);
     const [showModal, setShowModal] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     // Restore local state
     const [puzzleData, setPuzzleData] = useState<any>(null);
@@ -267,6 +269,23 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
         dispatch(makeGuess(JSON.stringify(input)));
     };
 
+    const handleShare = async () => {
+        if (!scoreResult) return;
+
+        const date = new Date().toLocaleDateString();
+        const emoji = scoreResult.finalScore > 900 ? '🤩' : scoreResult.finalScore > 700 ? '😎' : '🤔';
+
+        const shareText = `Logic Looper Daily #${date}\nScore: ${scoreResult.finalScore} ${emoji}\nTime: ${scoreResult.timeSeconds}s\nStreak: ${user?.streak_count || 0} 🔥\n\nCan you beat my score? Play at: logic-looper.com`;
+
+        try {
+            await navigator.clipboard.writeText(shareText);
+            alert('Result copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy', err);
+            alert('Failed to copy result.');
+        }
+    };
+
     return (
         <Layout>
             <div className="w-full max-w-5xl mx-auto space-y-12">
@@ -276,6 +295,18 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                     <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-400 drop-shadow-sm tracking-tighter">
                         Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent to-accent-glow">Puzzle</span>
                     </h1>
+
+                    {/* Help Button - Added absolute positioning */}
+                    <button
+                        onClick={() => setShowHelp(true)}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
+                        title="How to Play"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                        </svg>
+                    </button>
+
                     <p className="relative text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
                         One challenge. One chance. <span className="text-white font-bold">Prove your logic.</span>
                     </p>
@@ -331,30 +362,50 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                 </div>
 
                                 {mode === 'practice' ? (
-                                    <div className="flex justify-center gap-4">
-                                        <button
-                                            onClick={() => window.location.href = '/practice'}
-                                            className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
-                                        >
-                                            Back to Lab
-                                        </button>
-                                        <button
-                                            onClick={() => window.location.reload()}
-                                            className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
-                                        >
-                                            Replay Logic
-                                        </button>
+                                    <div className="flex flex-col gap-4 items-center">
+                                        <div className="flex justify-center gap-4">
+                                            <button
+                                                onClick={() => window.location.href = '/practice'}
+                                                className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
+                                            >
+                                                Back to Lab
+                                            </button>
+                                            <button
+                                                onClick={() => window.location.reload()}
+                                                className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
+                                            >
+                                                Replay Logic
+                                            </button>
+                                        </div>
+                                        {scoreResult && (
+                                            <button
+                                                onClick={handleShare}
+                                                className="text-neutral-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
+                                            >
+                                                <span>📤</span> Share Result
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
-                                            <NextPuzzleCountdown />
+                                    <div className="space-y-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
+                                                <NextPuzzleCountdown />
+                                            </div>
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
+                                                <StatsDisplay streak={user?.streak_count || 0} />
+                                            </div>
                                         </div>
-                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
-                                            <StatsDisplay streak={user?.streak_count || 0} />
-                                        </div>
+                                        {scoreResult && (
+                                            <button
+                                                onClick={handleShare}
+                                                className="mx-auto px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-colors flex items-center gap-2"
+                                            >
+                                                <span>📤</span> Share Result
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </motion.div>
@@ -460,6 +511,13 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                         />
                     )}
                     {showCelebration && <StreakCelebration streak={user?.streak_count || 0} />}
+                    {showHelp && (
+                        <HelpModal
+                            isOpen={showHelp}
+                            onClose={() => setShowHelp(false)}
+                            puzzleType={puzzleType}
+                        />
+                    )}
                 </AnimatePresence>
             </div>
         </Layout>

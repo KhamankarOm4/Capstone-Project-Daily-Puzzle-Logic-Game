@@ -73,7 +73,7 @@ const ActivityHeatmap = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-800">
-                    {activeDays} puzzles in the last year
+                    Total days active this year: {activeDays}
                 </h3>
             </div>
 
