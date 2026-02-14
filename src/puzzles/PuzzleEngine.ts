@@ -20,17 +20,12 @@ export interface PuzzleProps<TData, TSolution, TInput> {
     hintTrigger: number;
 }
 
-export interface PuzzleEngine<TData, TSolution, TInput> {
+export interface PuzzleLogic<TData, TSolution, TInput> {
     /**
      * Generates a unique puzzle based on a seed string (e.g., "SHA256(YYYY-MM-DD)").
      * Should be deterministic.
      */
     generate(seed: string): Promise<PuzzleInstance<TData, TSolution>>;
-
-    /**
-     * The React component that renders the puzzle UI.
-     */
-    render: FC<PuzzleProps<TData, TSolution, TInput>>;
 
     /**
      * Validates the user's input against the correct solution.
@@ -52,6 +47,13 @@ export interface PuzzleEngine<TData, TSolution, TInput> {
      * @deprecated Use specific scoring utility instead if possible, but kept for compatibility/extension.
      */
     calculateScore(timeSeconds: number, hintsUsed: number): number;
+}
+
+export interface PuzzleEngine<TData, TSolution, TInput> extends PuzzleLogic<TData, TSolution, TInput> {
+    /**
+     * The React component that renders the puzzle UI.
+     */
+    render: FC<PuzzleProps<TData, TSolution, TInput>>;
 }
 
 // Default score calculator

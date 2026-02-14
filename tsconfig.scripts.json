@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./dist-scripts",
+    "noEmit": false
+  },
+  "include": [
+  "scripts/**/*.ts",
+    "src/puzzles/**/*.ts"
+]
+}
