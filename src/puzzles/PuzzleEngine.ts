@@ -22,23 +22,34 @@ export interface PuzzleProps<TData, TSolution, TInput> {
 
 export interface PuzzleEngine<TData, TSolution, TInput> {
     /**
-     * Generates a unique puzzle based on a seed string (e.g., "2023-10-27").
+     * Generates a unique puzzle based on a seed string (e.g., "SHA256(YYYY-MM-DD)").
      * Should be deterministic.
      */
-    generatePuzzle(seed: string): Promise<PuzzleInstance<TData, TSolution>>;
+    generate(seed: string): Promise<PuzzleInstance<TData, TSolution>>;
 
     /**
      * The React component that renders the puzzle UI.
      */
-    PuzzleComponent: FC<PuzzleProps<TData, TSolution, TInput>>;
+    render: FC<PuzzleProps<TData, TSolution, TInput>>;
 
     /**
      * Validates the user's input against the correct solution.
      */
-    validateSolution(userInput: TInput, solution: TSolution): boolean;
+    validate(userInput: TInput, solution: TSolution): boolean;
+
+    /**
+     * Provides a hint based on the current solution and input.
+     */
+    getHint(solution: TSolution, currentInput: TInput): string | null;
+
+    /**
+     * Calculates the difficulty rating of the generated puzzle (e.g., 1-10).
+     */
+    calculateDifficulty(data: TData): number;
 
     /**
      * Calculates a score (0-100 or similar) based on performance.
+     * @deprecated Use specific scoring utility instead if possible, but kept for compatibility/extension.
      */
     calculateScore(timeSeconds: number, hintsUsed: number): number;
 }

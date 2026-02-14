@@ -37,7 +37,7 @@ const generateSequence = (seed: string, type: 'arithmetic' | 'geometric' | 'fibo
 };
 
 export const PatternSequenceEngine: PuzzleEngine<PatternData, PatternSolution, PatternInput> = {
-    async generatePuzzle(seed: string): Promise<PuzzleInstance<PatternData, PatternSolution>> {
+    async generate(seed: string): Promise<PuzzleInstance<PatternData, PatternSolution>> {
         const seedNum = parseInt(seed.substring(0, 8), 16);
         const types: ('arithmetic' | 'geometric' | 'fibonacci')[] = ['arithmetic', 'geometric', 'fibonacci'];
         const patternType = types[seedNum % types.length];
@@ -61,7 +61,7 @@ export const PatternSequenceEngine: PuzzleEngine<PatternData, PatternSolution, P
         };
     },
 
-    PuzzleComponent: ({ data, onInput, disabled, solution, hintTrigger }) => {
+    render: ({ data, onInput, disabled, solution, hintTrigger }) => {
         const [answer, setAnswer] = useState<string>('');
 
         useEffect(() => {
@@ -125,8 +125,16 @@ export const PatternSequenceEngine: PuzzleEngine<PatternData, PatternSolution, P
         );
     },
 
-    validateSolution(userInput: PatternInput, solution: PatternSolution): boolean {
+    validate: (userInput: PatternInput, solution: PatternSolution): boolean => {
         return userInput === solution.answer;
+    },
+
+    getHint: (solution: PatternSolution, _currentInput: PatternInput): string | null => {
+        return `The answer is ${solution.answer}`;
+    },
+
+    calculateDifficulty: (_data: PatternData): number => {
+        return 3;
     },
 
     calculateScore: defaultCalculateScore

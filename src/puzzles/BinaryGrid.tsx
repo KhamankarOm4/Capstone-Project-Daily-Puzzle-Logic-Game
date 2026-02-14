@@ -73,14 +73,14 @@ const generateBinaryGrid = (seed: string, size: number = 6): BinaryGridType => {
 };
 
 export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, BinaryGridInput> = {
-    async generatePuzzle(seed: string): Promise<PuzzleInstance<BinaryGridData, BinaryGridSolution>> {
+    async generate(seed: string): Promise<PuzzleInstance<BinaryGridData, BinaryGridSolution>> {
         const size = 6;
         const solvedGrid = generateBinaryGrid(seed, size);
         const puzzleGrid = solvedGrid.map(row => [...row]);
 
-        // Remove some cells
+        // Remove cells based on seed (remove about half)
         const seedNum = parseInt(seed.substring(0, 8), 16);
-        const cellsToRemove = 18; // Remove about half
+        const cellsToRemove = 18;
         let removed = 0;
 
         let attempts = 0;
@@ -106,7 +106,7 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
         };
     },
 
-    PuzzleComponent: ({ data, onInput, disabled, solution, hintTrigger }) => {
+    render: ({ data, onInput, disabled, solution, hintTrigger }) => {
         const [grid, setGrid] = useState<BinaryGridType>(data.grid.map(row => [...row]));
 
         // Handle hints
@@ -122,9 +122,6 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
                 if (emptyCells.length > 0) {
                     const randomIdx = Math.floor(Math.random() * emptyCells.length);
                     const { r, c } = emptyCells[randomIdx];
-                    // Solution might be just grid? Verify BinaryGridSolution type
-                    // In BinaryGridEngine, solution is { grid: solvedGrid }
-                    // BinaryGridSolution interface line 12: interface BinaryGridSolution { grid: BinaryGridType; }
                     const correctVal = solution.grid[r][c];
 
                     const newGrid = grid.map(row => [...row]);
@@ -187,7 +184,7 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
         );
     },
 
-    validateSolution(userInput: BinaryGridInput, solution: BinaryGridSolution): boolean {
+    validate: (userInput: BinaryGridInput, solution: BinaryGridSolution): boolean => {
         // First check if the grid is complete (no null cells)
         for (let i = 0; i < userInput.length; i++) {
             for (let j = 0; j < userInput[i].length; j++) {
@@ -205,6 +202,25 @@ export const BinaryGridEngine: PuzzleEngine<BinaryGridData, BinaryGridSolution, 
             }
         }
         return true;
+    },
+
+    getHint: (solution: BinaryGridSolution, currentInput: BinaryGridInput): string | null => {
+        // Find first empty or incorrect cell
+        for (let r = 0; r < 6; r++) {
+            for (let c = 0; c < 6; c++) {
+                if (currentInput[r][c] === null) {
+                    return `Row ${r + 1}, Col ${c + 1} is ${solution.grid[r][c]}`;
+                }
+                if (currentInput[r][c] !== solution.grid[r][c]) {
+                    return `Row ${r + 1}, Col ${c + 1} should be ${solution.grid[r][c]}`;
+                }
+            }
+        }
+        return "Puzzle is solved!";
+    },
+
+    calculateDifficulty: (_data: BinaryGridData): number => {
+        return 5;
     },
 
     calculateScore: defaultCalculateScore

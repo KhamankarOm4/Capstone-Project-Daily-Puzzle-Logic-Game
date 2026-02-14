@@ -57,7 +57,7 @@ const generateNumberSequence = (seed: string): { sequence: number[]; nextNumber:
 };
 
 export const NumberSequenceEngine: PuzzleEngine<NumberSeqData, NumberSeqSolution, NumberSeqInput> = {
-    async generatePuzzle(seed: string): Promise<PuzzleInstance<NumberSeqData, NumberSeqSolution>> {
+    async generate(seed: string): Promise<PuzzleInstance<NumberSeqData, NumberSeqSolution>> {
         const { sequence, nextNumber, type, description } = generateNumberSequence(seed);
 
         return {
@@ -72,7 +72,7 @@ export const NumberSequenceEngine: PuzzleEngine<NumberSeqData, NumberSeqSolution
         };
     },
 
-    PuzzleComponent: ({ data, onInput, disabled, solution, hintTrigger }) => {
+    render: ({ data, onInput, disabled, solution, hintTrigger }) => {
         const [answer, setAnswer] = useState<string>('');
 
         useEffect(() => {
@@ -132,8 +132,16 @@ export const NumberSequenceEngine: PuzzleEngine<NumberSeqData, NumberSeqSolution
         );
     },
 
-    validateSolution(userInput: NumberSeqInput, solution: NumberSeqSolution): boolean {
+    validate: (userInput: NumberSeqInput, solution: NumberSeqSolution): boolean => {
         return userInput === solution.nextNumber;
+    },
+
+    getHint: (solution: NumberSeqSolution, _currentInput: NumberSeqInput): string | null => {
+        return `The answer is ${solution.nextNumber}`;
+    },
+
+    calculateDifficulty: (_data: NumberSeqData): number => {
+        return 2;
     },
 
     calculateScore: defaultCalculateScore

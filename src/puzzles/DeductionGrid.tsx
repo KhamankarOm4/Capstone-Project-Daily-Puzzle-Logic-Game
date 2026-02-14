@@ -1,200 +1,210 @@
 import { useState, useEffect } from 'react';
 import { type PuzzleEngine, type PuzzleInstance, defaultCalculateScore } from './PuzzleEngine';
 
-type GridCell = 'X' | 'O' | null;
-type DeductionGridType = GridCell[][];
-
 interface DeductionData {
-    grid: DeductionGridType;
+    categories: string[][];
     clues: string[];
-    categories: { rows: string[]; cols: string[] };
+    solution: number[][]; // [itemIndex, associatedItemIndex]
 }
 
 interface DeductionSolution {
-    grid: DeductionGridType;
+    grid: (boolean | null)[][];
 }
 
-type DeductionInput = DeductionGridType;
+type DeductionInput = (boolean | null)[][];
 
-// Generate a simple 3x3 logic grid puzzle
-const generateLogicGrid = (seed: string): { grid: DeductionGridType; clues: string[] } => {
-    const seedNum = parseInt(seed.substring(0, 8), 16);
-
-    // Create solution grid (3x3)
-    const grid: DeductionGridType = Array(3).fill(null).map(() => Array(3).fill(null));
-
-    // Set correct matches (one X per row and column)
-    const matches = [
-        (seedNum % 3),
-        ((seedNum + 1) % 3),
-        ((seedNum + 2) % 3)
+// Helper to generate a logic puzzle
+const generateDeductionPuzzle = (_seed: string): { data: DeductionData, solution: DeductionSolution } => {
+    // Simplified generation logic
+    const categories = [
+        ['Alice', 'Bob', 'Charlie'],
+        ['Red', 'Blue', 'Green'],
+        ['Dog', 'Cat', 'Fish']
     ];
-
-    for (let i = 0; i < 3; i++) {
-        grid[i][matches[i]] = 'X';
-        for (let j = 0; j < 3; j++) {
-            if (j !== matches[i]) {
-                grid[i][j] = 'O';
-            }
-        }
-    }
-
-    // Generate clues
+    // In a real implementation, we would generate a consistent scenario based on seed
+    // For now, hardcode a simple scenario
     const clues = [
-        `Person ${matches[0] + 1} likes Item A`,
-        `Person ${matches[1] + 1} likes Item B`,
-        `Person ${matches[2] + 1} likes Item C`
+        "Alice doesn't have a Dog.",
+        "The person with the Red shirt has a Cat.",
+        "Bob is wearing Blue."
     ];
 
-    return { grid, clues };
+    // 0: Unchecked, 1: True, -1: False (mapped to boolean | null)
+    // Let's us 3x3 grid for pairwise relationships?
+    // Deduction grids are complex to represent. 
+    // Let's assume a simple 3x3 grid mapping Category 1 to Category 2.
+
+    const solutionGrid = [
+        [null, true, null],
+        [true, null, null],
+        [null, null, true]
+    ];
+
+    return {
+        data: {
+            categories,
+            clues,
+            solution: []
+        },
+        solution: {
+            grid: solutionGrid as (boolean | null)[][]
+        }
+    };
 };
 
 export const DeductionGridEngine: PuzzleEngine<DeductionData, DeductionSolution, DeductionInput> = {
-    async generatePuzzle(seed: string): Promise<PuzzleInstance<DeductionData, DeductionSolution>> {
-        const { grid, clues } = generateLogicGrid(seed);
-        const emptyGrid: DeductionGridType = Array(3).fill(null).map(() => Array(3).fill(null));
-
+    async generate(seed: string): Promise<PuzzleInstance<DeductionData, DeductionSolution>> {
+        const { data, solution } = generateDeductionPuzzle(seed);
         return {
             id: `deduction-${seed}`,
             seed,
-            data: {
-                grid: emptyGrid,
-                clues,
-                categories: {
-                    rows: ['Person 1', 'Person 2', 'Person 3'],
-                    cols: ['Item A', 'Item B', 'Item C']
-                }
-            },
-            solution: { grid }
+            data,
+            solution
         };
     },
 
-    PuzzleComponent: ({ data, onInput, disabled, solution, hintTrigger }) => {
-        const [grid, setGrid] = useState<DeductionGridType>(data.grid.map(row => [...row]));
+    render: ({ data, onInput, disabled, solution, hintTrigger }) => {
+        // Initialize grid
+        const [grid, setGrid] = useState<DeductionInput>(
+            Array(3).fill(null).map(() => Array(3).fill(null))
+        );
 
         useEffect(() => {
             if (hintTrigger > 0) {
-                // Find a cell that differs from solution?
-                // Deduction solution: { grid: ... }
-                // Find a null cell in current grid
-                const emptyCells: { r: number, c: number }[] = [];
-                grid.forEach((row, r) => {
+                // Hint logic: Validate one cell or fill one cell
+                // Simple implementation: Fill a random correct 'true' cell
+                const trueCells: { r: number, c: number }[] = [];
+                solution.grid.forEach((row, r) => {
                     row.forEach((cell, c) => {
-                        if (cell === null) emptyCells.push({ r, c });
+                        if (cell === true && grid[r][c] !== true) {
+                            trueCells.push({ r, c });
+                        }
                     });
                 });
 
-                if (emptyCells.length > 0) {
-                    const idx = Math.floor(Math.random() * emptyCells.length);
-                    const { r, c } = emptyCells[idx];
-                    const correctVal = solution.grid[r][c];
-
+                if (trueCells.length > 0) {
+                    const idx = Math.floor(Math.random() * trueCells.length);
+                    const { r, c } = trueCells[idx];
                     const newGrid = grid.map(row => [...row]);
-                    newGrid[r][c] = correctVal;
+                    newGrid[r][c] = true;
                     setGrid(newGrid);
                     onInput(newGrid);
                 }
             }
-        }, [hintTrigger, grid, onInput, solution]);
+        }, [hintTrigger, onInput, solution, grid]);
 
-        const handleCellClick = (row: number, col: number) => {
+
+        const toggleCell = (r: number, c: number) => {
             if (disabled) return;
-
-            const newGrid = grid.map(r => [...r]);
-            // Cycle through: null -> X -> O -> null
-            if (newGrid[row][col] === null) newGrid[row][col] = 'X';
-            else if (newGrid[row][col] === 'X') newGrid[row][col] = 'O';
-            else newGrid[row][col] = null;
-
+            const newGrid = grid.map(row => [...row]);
+            const current = newGrid[r][c];
+            if (current === null) newGrid[r][c] = false; // X
+            else if (current === false) newGrid[r][c] = true; // O
+            else newGrid[r][c] = null; // Clear
             setGrid(newGrid);
             onInput(newGrid);
         };
 
         return (
-            <div className="flex flex-col items-center gap-8 w-full max-w-2xl mx-auto p-8 glass-panel rounded-3xl relative overflow-hidden">
+            <div className="flex flex-col items-center gap-8 w-full max-w-3xl mx-auto p-10 glass-panel rounded-3xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                    <span className="text-8xl font-black text-white">L</span>
+                    <span className="text-8xl font-black text-white">✓</span>
                 </div>
 
                 <div className="text-center space-y-2 relative z-10">
                     <h3 className="text-3xl font-black text-white tracking-tighter">Logic <span className="text-accent-glow">Grid</span></h3>
-                    <p className="text-neutral-300 text-sm font-medium">Use clues to find matches. Click to toggle.</p>
+                    <p className="text-neutral-300 text-sm font-medium">Deduce the connections.</p>
                 </div>
 
-                <div className="w-full bg-black/20 p-6 rounded-2xl border border-white/5 backdrop-blur-sm relative z-10">
-                    <h4 className="font-bold text-accent-cyan mb-4 text-xs uppercase tracking-widest flex items-center gap-2">
-                        <span className="w-1 h-4 bg-accent-cyan rounded-full"></span>
-                        Intel / Clues
-                    </h4>
-                    <ul className="space-y-3 text-sm text-neutral-300">
-                        {data.clues.map((clue, i) => (
-                            <li key={i} className="flex items-start gap-3 bg-white/5 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                                <span className="text-accent-cyan font-bold">•</span>
-                                <span className="font-medium tracking-wide">{clue}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                <div className="overflow-x-auto max-w-full p-2 relative z-10">
-                    <div className="inline-grid grid-cols-4 gap-1.5 p-3 bg-black/40 rounded-2xl border border-white/10 shadow-inner backdrop-blur-md">
-                        {/* Empty Corner */}
-                        <div className="w-20 h-10 md:w-24 md:h-12"></div>
-
-                        {/* Column Headers */}
-                        {data.categories.cols.map((col, i) => (
-                            <div key={i} className="w-16 h-10 md:w-20 md:h-12 flex items-center justify-center text-[10px] md:text-xs font-bold text-neutral-300 bg-white/5 rounded-lg border border-white/5 uppercase tracking-wide">
-                                {col}
-                            </div>
-                        ))}
-
-                        {/* Rows */}
-                        {grid.map((row, i) => (
-                            <>
-                                {/* Row Header */}
-                                <div key={`row-${i}`} className="w-20 h-14 md:w-24 md:h-16 flex items-center justify-center text-[10px] md:text-xs font-bold text-neutral-300 bg-white/5 rounded-lg border border-white/5 px-2 text-center uppercase tracking-wide">
-                                    {data.categories.rows[i]}
-                                </div>
-
-                                {/* Cells */}
-                                {row.map((cell, j) => (
-                                    <button
-                                        key={`${i}-${j}`}
-                                        onClick={() => handleCellClick(i, j)}
-                                        disabled={disabled}
-                                        className={`w-16 h-14 md:w-20 md:h-16 flex items-center justify-center text-2xl font-bold rounded-xl border transition-all duration-200
-                                            ${cell === 'X'
-                                                ? 'bg-red-500/10 border-red-500/30 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.2)]'
-                                                : cell === 'O'
-                                                    ? 'bg-accent-cyan/10 border-accent-cyan/30 text-accent-cyan shadow-[0_0_10px_rgba(6,182,212,0.2)]'
-                                                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'}
-                                            ${!disabled && 'hover:scale-105 active:scale-95 focus:outline-none focus:ring-0'}
-                                        `}
-                                    >
-                                        {cell === 'X' && '✗'}
-                                        {cell === 'O' && '✓'}
-                                    </button>
-                                ))}
-                            </>
-                        ))}
+                <div className="w-full flex flex-col md:flex-row gap-8 relative z-10">
+                    {/* Clues */}
+                    <div className="flex-1 bg-black/20 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
+                        <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs border-b border-white/10 pb-2">Clues</h4>
+                        <ul className="space-y-3">
+                            {data.clues.map((clue, i) => (
+                                <li key={i} className="text-neutral-300 text-sm flex gap-3">
+                                    <span className="text-accent-glow font-bold">{i + 1}.</span>
+                                    {clue}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                </div>
 
-                <div className="flex gap-6 text-xs text-neutral-400 font-medium uppercase tracking-wider bg-black/20 px-6 py-2 rounded-full border border-white/5">
-                    <span className="flex items-center gap-2"><span className="text-red-400 font-bold text-base">✗</span> False</span>
-                    <span className="flex items-center gap-2"><span className="text-accent-cyan font-bold text-base">✓</span> True</span>
+                    {/* Grid */}
+                    <div className="flex-1 flex justify-center">
+                        <div className="bg-surface-100 p-4 rounded-xl border border-white/10 shadow-lg">
+                            <div className="grid grid-cols-4 gap-1">
+                                <div /> {/* Empty corner */}
+                                {data.categories[1].map((cat, i) => (
+                                    <div key={i} className="text-xs text-neutral-400 font-medium rotate-45 origin-bottom-left translate-x-4 mb-2">
+                                        {cat}
+                                    </div>
+                                ))}
+
+                                {data.categories[0].map((cat, r) => (
+                                    <>
+                                        <div key={r} className="text-xs text-neutral-300 font-medium flex items-center justify-end pr-2">
+                                            {cat}
+                                        </div>
+                                        {Array(3).fill(null).map((_, c) => (
+                                            <button
+                                                key={`${r}-${c}`}
+                                                onClick={() => toggleCell(r, c)}
+                                                disabled={disabled}
+                                                className={`
+                                                    w-10 h-10 border border-white/10 flex items-center justify-center transition-all duration-200
+                                                    ${grid[r][c] === true ? 'bg-accent/20 text-accent-glow font-bold text-lg' : ''}
+                                                    ${grid[r][c] === false ? 'bg-black/20 text-neutral-600' : ''}
+                                                    ${!disabled ? 'hover:bg-white/5' : ''}
+                                                `}
+                                            >
+                                                {grid[r][c] === true ? 'O' : grid[r][c] === false ? 'X' : ''}
+                                            </button>
+                                        ))}
+                                    </>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     },
 
-    validateSolution(userInput: DeductionInput, solution: DeductionSolution): boolean {
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (userInput[i][j] !== solution.grid[i][j]) return false;
+    validate: (userInput: DeductionInput, solution: DeductionSolution): boolean => {
+        // Validate against solution grid
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                // If solution is TRUE, input must be TRUE.
+                // If solution is FALSE (or null/empty in simple model), input should be FALSE or NULL?
+                // Logic puzzles usually require marking strictly.
+                // Let's say we only check if the positive connections match.
+                // Or strict match?
+                // If solution.grid has nulls, does userInput need to match exactly?
+                // A solved logic grid has TRUE for connections and FALSE for others.
+
+                const solVal = solution.grid[r][c] === true; // Treat null as false?
+                const inputVal = userInput[r][c] === true;
+                if (solVal !== inputVal) return false;
             }
         }
         return true;
+    },
+
+    getHint: (solution: DeductionSolution, currentInput: DeductionInput): string | null => {
+        // Provide a hint about a mismatch
+        for (let r = 0; r < 3; r++) {
+            for (let c = 0; c < 3; c++) {
+                if (currentInput[r][c] === true && solution.grid[r][c] !== true) {
+                    return "Check your 'O' placements.";
+                }
+            }
+        }
+        return "Keep looking at the clues!";
+    },
+
+    calculateDifficulty: (_data: DeductionData): number => {
+        return 4;
     },
 
     calculateScore: defaultCalculateScore

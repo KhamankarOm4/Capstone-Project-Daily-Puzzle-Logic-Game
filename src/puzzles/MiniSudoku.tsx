@@ -74,7 +74,7 @@ const generateSolvedGrid = (seed: string): SudokuGrid => {
 };
 
 export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, MiniSudokuInput> = {
-    async generatePuzzle(seed: string): Promise<PuzzleInstance<MiniSudokuData, MiniSudokuSolution>> {
+    async generate(seed: string): Promise<PuzzleInstance<MiniSudokuData, MiniSudokuSolution>> {
         const solvedGrid = generateSolvedGrid(seed);
         const puzzleGrid = solvedGrid.map(row => [...row]);
 
@@ -105,10 +105,9 @@ export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, 
         };
     },
 
-    PuzzleComponent: ({ data, onInput, disabled, solution, hintTrigger }) => {
+    render: ({ data, onInput, disabled, solution, hintTrigger }) => {
         const [grid, setGrid] = useState<SudokuGrid>(data.grid.map(row => [...row]));
 
-        // Handle hints
         useEffect(() => {
             if (hintTrigger > 0) {
                 // Find all empty cells
@@ -120,7 +119,7 @@ export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, 
                 });
 
                 if (emptyCells.length > 0) {
-                    // Pick random empty cell
+                    // Pick random empty cell - simplified for deterministic behavior if needed, but random is fine for reveal
                     const randomIdx = Math.floor(Math.random() * emptyCells.length);
                     const { r, c } = emptyCells[randomIdx];
                     const correctVal = solution.grid[r][c];
@@ -134,6 +133,7 @@ export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, 
                 }
             }
         }, [hintTrigger, grid, onInput, solution]);
+
 
         const handleChange = (row: number, col: number, value: string) => {
             if (data.initialGrid[row][col] !== null) return; // Can't change initial cells
@@ -193,13 +193,35 @@ export const MiniSudokuEngine: PuzzleEngine<MiniSudokuData, MiniSudokuSolution, 
         );
     },
 
-    validateSolution(userInput: MiniSudokuInput, solution: MiniSudokuSolution): boolean {
+    validate: (userInput: MiniSudokuInput, solution: MiniSudokuSolution): boolean => {
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
                 if (userInput[i][j] !== solution.grid[i][j]) return false;
             }
         }
         return true;
+    },
+
+    getHint: (solution: MiniSudokuSolution, currentInput: MiniSudokuInput): string | null => {
+        // Find first empty or incorrect cell
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                if (currentInput[r][c] === null) {
+                    return `Row ${r + 1}, Col ${c + 1} is ${solution.grid[r][c]}`;
+                }
+                if (currentInput[r][c] !== solution.grid[r][c]) {
+                    return `Row ${r + 1}, Col ${c + 1} should be ${solution.grid[r][c]}`;
+                }
+            }
+        }
+        return "Puzzle is solved!";
+    },
+
+    calculateDifficulty: (data: MiniSudokuData): number => {
+        // Simple difficulty based on empty cells
+        let emptyCount = 0;
+        data.grid.forEach(row => row.forEach(cell => { if (cell === null) emptyCount++; }));
+        return Math.floor(emptyCount / 2); // roughly 1-4
     },
 
     calculateScore: defaultCalculateScore

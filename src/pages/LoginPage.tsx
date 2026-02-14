@@ -9,7 +9,7 @@ const LoginPage = () => {
     return (
         <div
             className="min-h-screen flex flex-col items-center justify-between p-8 relative overflow-hidden bg-cover bg-center"
-            style={{ backgroundImage: "url('/assets/login-bg.png')" }}
+            style={{ backgroundImage: "url('/assets/anime-night-sky-illustration.jpg')" }}
         >
             {/* Dark Overlay for readability */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />

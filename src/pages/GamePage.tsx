@@ -40,7 +40,7 @@ const PuzzleRenderer = ({
     hintTrigger: number;
 }) => {
     const engine = getPuzzleEngine(puzzleType) as any;
-    const Component = engine.PuzzleComponent;
+    const Component = engine.render;
     return <Component data={puzzleData} onInput={onInput} disabled={disabled} solution={solution} hintTrigger={hintTrigger} />;
 };
 
@@ -130,7 +130,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                 setPuzzleType(type);
 
                 const engine = getPuzzleEngine(type);
-                const puzzle = await engine.generatePuzzle(seed);
+                const puzzle = await engine.generate(seed);
                 setPuzzleData(puzzle.data);
                 setPuzzleSolution(puzzle.solution); // Store the solution
 
@@ -197,11 +197,11 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             const seed = getDailySeed();
             const type = selectPuzzleForDay(seed);
             engine = getPuzzleEngine(type);
-            const puzzle = await engine.generatePuzzle(seed);
+            const puzzle = await engine.generate(seed);
             solutionToValidate = puzzle.solution;
         }
 
-        const isCorrect = (engine as any).validateSolution(currentInput, solutionToValidate);
+        const isCorrect = (engine as any).validate(currentInput, solutionToValidate);
 
         if (isCorrect) {
             const score = calculateScore(getElapsedSeconds(), mode === 'practice');
