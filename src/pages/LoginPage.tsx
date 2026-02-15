@@ -77,6 +77,7 @@ const LoginPage = () => {
                         [debug: check connection]
                     </button>
                 </div>
+            </motion.div>
         </div>
     );
 };
