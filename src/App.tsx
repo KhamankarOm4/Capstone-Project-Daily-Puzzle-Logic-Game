@@ -7,6 +7,7 @@ import GamePage from './pages/GamePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
+import DebugAuthPage from './pages/DebugAuthPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -88,6 +89,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/debug-auth" element={<DebugAuthPage />} />
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
         <Route
           path="/"
