@@ -79,6 +79,9 @@ const LoginPage = () => {
                     <a href="/api/health" target="_blank" className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors block mt-2">
                         [debug: test server health (TS)]
                     </a>
+                    <a href="/api/test" target="_blank" className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors block mt-2">
+                        [debug: test server simple (MJS)]
+                    </a>
                 </div>
             </motion.div>
         </div>
