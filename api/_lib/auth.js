@@ -14,9 +14,9 @@ export function setTokenCookie(res, token) {
         secure: isProduction, // Must be true on Vercel
         path: '/',
         maxAge: 60 * 60 * 24 * 7, // 1 week
-        sameSite: 'Lax', // Safer for redirects than None
+        sameSite: 'none', // Required for some OAuth flows, must be lowercase
     });
-    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: Lax)`);
+    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: none)`);
     res.setHeader('Set-Cookie', cookie);
 }
 

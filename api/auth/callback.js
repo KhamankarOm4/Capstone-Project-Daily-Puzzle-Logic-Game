@@ -40,9 +40,10 @@ export default async function handler(req, res) {
 
         const token = generateToken(user);
         setTokenCookie(res, token);
-        console.log('Token cookie set. Redirecting to home...');
+        console.log('Token cookie set. Manually redirecting to home...');
 
-        res.redirect('/');
+        res.setHeader('Location', '/?login=success');
+        res.status(302).end();
     } catch (error) {
         console.error('Auth Error Trace:', error);
         res.status(500).json({ message: 'Authentication failed', error: error.message });
