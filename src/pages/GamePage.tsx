@@ -232,332 +232,335 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                         },
                         body: JSON.stringify(score),
                         credentials: 'include',
-                    }); const data = await response.json();
-                    dispatch(updateUser({
-                        streak_count: data.streak,
-                        total_points: data.total_points
-                    }));
+                    });
 
-                    // Trigger celebration if streak >= 2
-                    if (data.streak >= 2) {
-                        setShowCelebration(true);
-                        setTimeout(() => setShowCelebration(false), 4000);
+                    if (response.ok) {
+                        const data = await response.json();
+                        dispatch(updateUser({
+                            streak_count: data.streak,
+                            total_points: data.total_points
+                        }));
+
+                        // Trigger celebration if streak >= 2
+                        if (data.streak >= 2) {
+                            setShowCelebration(true);
+                            setTimeout(() => setShowCelebration(false), 4000);
+                        }
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        console.error('Failed to sync. Status:', response.status, errData);
                     }
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    console.error('Failed to sync. Status:', response.status, errData);
+                } catch (error) {
+                    console.error('Failed to sync puzzle completion:', error);
                 }
-            } catch (error) {
-                console.error('Failed to sync puzzle completion:', error);
+
+                dispatch(recordWin(guesses.length));
+                recordDayActivity(true);
+
+                markTodayCompleted(true, 1);
+
+                // Submit to leaderboard (fire-and-forget)
+                const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
+                submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
             }
 
-            dispatch(recordWin(guesses.length));
-            recordDayActivity(true);
-
-            markTodayCompleted(true, 1);
-
-            // Submit to leaderboard (fire-and-forget)
-            const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
-            submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
+            setCompleted(true);
+            setShowModal(true);
+        } else {
+            playError();
+            setShakeKey(prev => prev + 1); // Trigger shake
+            recordDayActivity(false);
+            // alert('Incorrect solution. Try again!'); // Removed alert in favor of visual feedback
+            setHintText("Incorrect. Check your logic and try again.");
+            setTimeout(() => setHintText(null), 3000);
         }
-
-        setCompleted(true);
-        setShowModal(true);
-    } else {
-        playError();
-    setShakeKey(prev => prev + 1); // Trigger shake
-    recordDayActivity(false);
-    // alert('Incorrect solution. Try again!'); // Removed alert in favor of visual feedback
-    setHintText("Incorrect. Check your logic and try again.");
-    setTimeout(() => setHintText(null), 3000);
-}
     };
 
-const handleCloseModal = () => {
-    playClick();
-    setShowModal(false);
-};
+    const handleCloseModal = () => {
+        playClick();
+        setShowModal(false);
+    };
 
-const handlePuzzleInput = (input: any) => {
-    setCurrentInput(input);
-    dispatch(makeGuess(JSON.stringify(input)));
-};
+    const handlePuzzleInput = (input: any) => {
+        setCurrentInput(input);
+        dispatch(makeGuess(JSON.stringify(input)));
+    };
 
-const handleShare = async () => {
-    playClick();
-    if (!scoreResult) return;
+    const handleShare = async () => {
+        playClick();
+        if (!scoreResult) return;
 
-    const date = new Date().toLocaleDateString();
-    const emoji = scoreResult.finalScore > 900 ? '🤩' : scoreResult.finalScore > 700 ? '😎' : '🤔';
+        const date = new Date().toLocaleDateString();
+        const emoji = scoreResult.finalScore > 900 ? '🤩' : scoreResult.finalScore > 700 ? '😎' : '🤔';
 
-    const shareText = `Logic Looper Daily #${date}\nScore: ${scoreResult.finalScore} ${emoji}\nTime: ${scoreResult.timeSeconds}s\nStreak: ${user?.streak_count || 0} 🔥\n\nCan you beat my score? Play at: logic-looper.com`;
+        const shareText = `Logic Looper Daily #${date}\nScore: ${scoreResult.finalScore} ${emoji}\nTime: ${scoreResult.timeSeconds}s\nStreak: ${user?.streak_count || 0} 🔥\n\nCan you beat my score? Play at: logic-looper.com`;
 
-    try {
-        await navigator.clipboard.writeText(shareText);
-        alert('Result copied to clipboard!');
-    } catch (err) {
-        console.error('Failed to copy', err);
-        alert('Failed to copy result.');
-    }
-};
+        try {
+            await navigator.clipboard.writeText(shareText);
+            alert('Result copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy', err);
+            alert('Failed to copy result.');
+        }
+    };
 
-return (
-    <Layout>
-        <div className="w-full max-w-5xl mx-auto space-y-12">
-            {/* Global Confetti */}
-            <CelebrationConfetti isActive={completed} />
+    return (
+        <Layout>
+            <div className="w-full max-w-5xl mx-auto space-y-12">
+                {/* Global Confetti */}
+                <CelebrationConfetti isActive={completed} />
 
-            {/* Header Section */}
-            <div className="text-center space-y-4 relative">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-accent/20 blur-[100px] rounded-full pointer-events-none"></div>
-                <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-400 drop-shadow-sm tracking-tighter">
-                    Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent to-accent-glow">Puzzle</span>
-                </h1>
+                {/* Header Section */}
+                <div className="text-center space-y-4 relative">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-accent/20 blur-[100px] rounded-full pointer-events-none"></div>
+                    <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-400 drop-shadow-sm tracking-tighter">
+                        Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent to-accent-glow">Puzzle</span>
+                    </h1>
 
-                {/* Help Button - Added absolute positioning */}
-                <button
-                    onClick={() => {
-                        playClick();
-                        setShowHelp(true);
-                    }}
-                    className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
-                    title="How to Play"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
-                    </svg>
-                </button>
+                    {/* Help Button - Added absolute positioning */}
+                    <button
+                        onClick={() => {
+                            playClick();
+                            setShowHelp(true);
+                        }}
+                        className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
+                        title="How to Play"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                        </svg>
+                    </button>
 
-                <p className="relative text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-                    One challenge. One chance. <span className="text-white font-bold">Prove your logic.</span>
-                </p>
-            </div>
-
-            {/* Loading State */}
-            {!puzzleData && !completed && isAuthenticated ? (
-                <div className="flex flex-col items-center justify-center py-32">
-                    <div className="relative">
-                        <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
-                        <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full animate-pulse"></div>
-                    </div>
-                    <p className="mt-8 text-neutral-400 font-medium tracking-wide uppercase text-sm">Initializing System...</p>
+                    <p className="relative text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                        One challenge. One chance. <span className="text-white font-bold">Prove your logic.</span>
+                    </p>
                 </div>
-            ) : (
-                <AnimatePresence mode="wait">
-                    {!isAuthenticated ? (
-                        <motion.div
-                            key="login"
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -30 }}
-                            className="text-center p-16 glass-panel rounded-[2.5rem] max-w-3xl mx-auto relative overflow-hidden group"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                            <h2 className="relative text-3xl font-bold text-white mb-6">Enter the Arena</h2>
-                            <p className="relative text-neutral-300 mb-10 text-lg">Sign in to track your streak, earn points, and climb the global leaderboard.</p>
-                            <div className="relative">
-                                <Navigate to="/login" />
-                            </div>
-                        </motion.div>
-                    ) : completed ? (
-                        <motion.div
-                            key="completed"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="glass-panel rounded-[2.5rem] p-12 text-center space-y-10 max-w-3xl mx-auto border border-accent/20 shadow-[0_0_50px_-10px_rgba(112,0,255,0.3)]"
-                        >
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full animate-pulse"></div>
-                                <img
-                                    src="/assets/3d-models/puzzle-success.png"
-                                    alt="Success!"
-                                    className="relative w-40 h-40 mx-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-float"
-                                />
-                            </div>
 
-                            <div>
-                                <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Mission Complete</h2>
-                                <p className="text-neutral-300 text-xl">
-                                    {mode === 'practice' ? 'Great practice session! Ready for more?' : 'Excellent work, Agent. The system is secure.'}
-                                </p>
-                            </div>
-
-                            {mode === 'practice' ? (
-                                <div className="flex flex-col gap-4 items-center">
-                                    <div className="flex justify-center gap-4">
-                                        <button
-                                            onClick={() => {
-                                                playClick();
-                                                window.location.href = '/practice';
-                                            }}
-                                            className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
-                                        >
-                                            Back to Lab
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                playClick();
-                                                window.location.reload();
-                                            }}
-                                            className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
-                                        >
-                                            Replay Logic
-                                        </button>
-                                    </div>
-                                    {scoreResult && (
-                                        <button
-                                            onClick={handleShare}
-                                            className="text-neutral-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
-                                        >
-                                            <span>📤</span> Share Result
-                                        </button>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
-                                            <NextPuzzleCountdown />
-                                        </div>
-                                        <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                            <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
-                                            <StatsDisplay streak={user?.streak_count || 0} />
-                                        </div>
-                                    </div>
-                                    {scoreResult && (
-                                        <button
-                                            onClick={handleShare}
-                                            className="mx-auto px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-colors flex items-center gap-2"
-                                        >
-                                            <span>📤</span> Share Result
-                                        </button>
-                                    )}
-                                </div>
-                            )}
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="game"
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -40 }}
-                            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                            className="max-w-3xl mx-auto"
-                        >
-                            {/* Main Puzzle Card */}
+                {/* Loading State */}
+                {!puzzleData && !completed && isAuthenticated ? (
+                    <div className="flex flex-col items-center justify-center py-32">
+                        <div className="relative">
+                            <div className="w-16 h-16 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
+                            <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full animate-pulse"></div>
+                        </div>
+                        <p className="mt-8 text-neutral-400 font-medium tracking-wide uppercase text-sm">Initializing System...</p>
+                    </div>
+                ) : (
+                    <AnimatePresence mode="wait">
+                        {!isAuthenticated ? (
                             <motion.div
-                                key={`card-${shakeKey}`}
-                                animate={shakeKey > 0 ? { x: [-10, 10, -10, 10, -5, 5, 0] } : {}}
-                                transition={{ duration: 0.4 }}
-                                className={`relative glass-card rounded-[2.5rem] p-8 md:p-12 transition-all duration-500 overflow-hidden
-                                        ${completed ? 'border-accent shadow-[0_0_50px_rgba(112,0,255,0.4)]' : 'shadow-2xl'}`}
+                                key="login"
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -30 }}
+                                className="text-center p-16 glass-panel rounded-[2.5rem] max-w-3xl mx-auto relative overflow-hidden group"
                             >
-                                {/* Top Bar: Timer & Status */}
-                                <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
-                                        <span className="text-sm font-bold text-neutral-400 tracking-widest uppercase">
-                                            {mode === 'practice' ? 'Training Mode' : 'Live Mission'}
-                                        </span>
-                                    </div>
-                                    <GameTimer
-                                        startTime={startTime}
-                                        isRunning={!completed}
-                                    />
+                                <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <h2 className="relative text-3xl font-bold text-white mb-6">Enter the Arena</h2>
+                                <p className="relative text-neutral-300 mb-10 text-lg">Sign in to track your streak, earn points, and climb the global leaderboard.</p>
+                                <div className="relative">
+                                    <Navigate to="/login" />
                                 </div>
-
-                                {/* Puzzle Area */}
-                                <div className="flex justify-center min-h-[300px] items-center mb-10">
-                                    <PuzzleRenderer
-                                        puzzleData={puzzleData}
-                                        puzzleType={puzzleType}
-                                        onInput={handlePuzzleInput}
-                                        disabled={completed}
-                                        solution={puzzleSolution}
-                                        hintTrigger={hintTrigger}
-                                    />
-                                </div>
-
-                                {/* Controls Area (Integrated) */}
-                                <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
-                                    <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
-                                        <div className="text-left w-full md:w-auto">
-                                            <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">
-                                                Mission Controls
-                                            </p>
-                                            <p className="text-sm text-neutral-300">
-                                                {hintsRemaining} hint{hintsRemaining !== 1 ? 's' : ''} available
-                                            </p>
-                                        </div>
-
-                                        <div className="flex-1 w-full md:w-auto">
-                                            <GameControls
-                                                onSubmit={handleSubmit}
-                                                onHint={handleHint}
-                                                hintsRemaining={hintsRemaining}
-                                                disabled={completed}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Hint Alert Overlay */}
-                                <AnimatePresence>
-                                    {hintText && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            className={`absolute bottom-24 left-1/2 -translate-x-1/2 border px-6 py-3 rounded-full backdrop-blur-md shadow-lg z-20 
-                                                    ${hintText.includes('Incorrect') || hintText.includes('No hints')
-                                                    ? 'bg-red-500/10 border-red-500/30 text-red-500'
-                                                    : 'bg-accent-cyan/10 border-accent-cyan/30 text-accent-cyan'}`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-lg">
-                                                    {hintText.includes('Incorrect') || hintText.includes('No hints') ? '⚠️' : '💡'}
-                                                </span>
-                                                <span className="text-sm font-bold">{hintText}</span>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
                             </motion.div>
+                        ) : completed ? (
+                            <motion.div
+                                key="completed"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="glass-panel rounded-[2.5rem] p-12 text-center space-y-10 max-w-3xl mx-auto border border-accent/20 shadow-[0_0_50px_-10px_rgba(112,0,255,0.3)]"
+                            >
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-accent/20 blur-3xl rounded-full animate-pulse"></div>
+                                    <img
+                                        src="/assets/3d-models/puzzle-success.png"
+                                        alt="Success!"
+                                        className="relative w-40 h-40 mx-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-float"
+                                    />
+                                </div>
 
-                            {/* Minimal Footer */}
-                            <div className="text-center mt-6">
-                                <p className="text-neutral-500 text-xs uppercase tracking-widest">
-                                    {mode === 'practice' ? 'Practice makes perfect.' : 'Accuracy is key. Good luck.'}
-                                </p>
-                            </div>
-                        </motion.div>
+                                <div>
+                                    <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Mission Complete</h2>
+                                    <p className="text-neutral-300 text-xl">
+                                        {mode === 'practice' ? 'Great practice session! Ready for more?' : 'Excellent work, Agent. The system is secure.'}
+                                    </p>
+                                </div>
+
+                                {mode === 'practice' ? (
+                                    <div className="flex flex-col gap-4 items-center">
+                                        <div className="flex justify-center gap-4">
+                                            <button
+                                                onClick={() => {
+                                                    playClick();
+                                                    window.location.href = '/practice';
+                                                }}
+                                                className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
+                                            >
+                                                Back to Lab
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    playClick();
+                                                    window.location.reload();
+                                                }}
+                                                className="px-8 py-3 rounded-xl bg-accent hover:bg-accent-glow text-white font-bold shadow-lg transition-all"
+                                            >
+                                                Replay Logic
+                                            </button>
+                                        </div>
+                                        {scoreResult && (
+                                            <button
+                                                onClick={handleShare}
+                                                className="text-neutral-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
+                                            >
+                                                <span>📤</span> Share Result
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
+                                                <NextPuzzleCountdown />
+                                            </div>
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
+                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
+                                                <StatsDisplay streak={user?.streak_count || 0} />
+                                            </div>
+                                        </div>
+                                        {scoreResult && (
+                                            <button
+                                                onClick={handleShare}
+                                                className="mx-auto px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-colors flex items-center gap-2"
+                                            >
+                                                <span>📤</span> Share Result
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="game"
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -40 }}
+                                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                                className="max-w-3xl mx-auto"
+                            >
+                                {/* Main Puzzle Card */}
+                                <motion.div
+                                    key={`card-${shakeKey}`}
+                                    animate={shakeKey > 0 ? { x: [-10, 10, -10, 10, -5, 5, 0] } : {}}
+                                    transition={{ duration: 0.4 }}
+                                    className={`relative glass-card rounded-[2.5rem] p-8 md:p-12 transition-all duration-500 overflow-hidden
+                                        ${completed ? 'border-accent shadow-[0_0_50px_rgba(112,0,255,0.4)]' : 'shadow-2xl'}`}
+                                >
+                                    {/* Top Bar: Timer & Status */}
+                                    <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
+                                            <span className="text-sm font-bold text-neutral-400 tracking-widest uppercase">
+                                                {mode === 'practice' ? 'Training Mode' : 'Live Mission'}
+                                            </span>
+                                        </div>
+                                        <GameTimer
+                                            startTime={startTime}
+                                            isRunning={!completed}
+                                        />
+                                    </div>
+
+                                    {/* Puzzle Area */}
+                                    <div className="flex justify-center min-h-[300px] items-center mb-10">
+                                        <PuzzleRenderer
+                                            puzzleData={puzzleData}
+                                            puzzleType={puzzleType}
+                                            onInput={handlePuzzleInput}
+                                            disabled={completed}
+                                            solution={puzzleSolution}
+                                            hintTrigger={hintTrigger}
+                                        />
+                                    </div>
+
+                                    {/* Controls Area (Integrated) */}
+                                    <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                        <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
+                                            <div className="text-left w-full md:w-auto">
+                                                <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">
+                                                    Mission Controls
+                                                </p>
+                                                <p className="text-sm text-neutral-300">
+                                                    {hintsRemaining} hint{hintsRemaining !== 1 ? 's' : ''} available
+                                                </p>
+                                            </div>
+
+                                            <div className="flex-1 w-full md:w-auto">
+                                                <GameControls
+                                                    onSubmit={handleSubmit}
+                                                    onHint={handleHint}
+                                                    hintsRemaining={hintsRemaining}
+                                                    disabled={completed}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Hint Alert Overlay */}
+                                    <AnimatePresence>
+                                        {hintText && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className={`absolute bottom-24 left-1/2 -translate-x-1/2 border px-6 py-3 rounded-full backdrop-blur-md shadow-lg z-20 
+                                                    ${hintText.includes('Incorrect') || hintText.includes('No hints')
+                                                        ? 'bg-red-500/10 border-red-500/30 text-red-500'
+                                                        : 'bg-accent-cyan/10 border-accent-cyan/30 text-accent-cyan'}`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-lg">
+                                                        {hintText.includes('Incorrect') || hintText.includes('No hints') ? '⚠️' : '💡'}
+                                                    </span>
+                                                    <span className="text-sm font-bold">{hintText}</span>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+
+                                {/* Minimal Footer */}
+                                <div className="text-center mt-6">
+                                    <p className="text-neutral-500 text-xs uppercase tracking-widest">
+                                        {mode === 'practice' ? 'Practice makes perfect.' : 'Accuracy is key. Good luck.'}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                )}
+
+                {/* Modals and Overlays */}
+                <AnimatePresence>
+                    {showModal && (
+                        <ResultModal
+                            isWin={true}
+                            score={scoreResult}
+                            streak={user?.streak_count || 0}
+                            onClose={handleCloseModal}
+                        />
+                    )}
+                    {showCelebration && <StreakCelebration streak={user?.streak_count || 0} />}
+                    {showHelp && (
+                        <HelpModal
+                            isOpen={showHelp}
+                            onClose={() => setShowHelp(false)}
+                            puzzleType={puzzleType}
+                        />
                     )}
                 </AnimatePresence>
-            )}
-
-            {/* Modals and Overlays */}
-            <AnimatePresence>
-                {showModal && (
-                    <ResultModal
-                        isWin={true}
-                        score={scoreResult}
-                        streak={user?.streak_count || 0}
-                        onClose={handleCloseModal}
-                    />
-                )}
-                {showCelebration && <StreakCelebration streak={user?.streak_count || 0} />}
-                {showHelp && (
-                    <HelpModal
-                        isOpen={showHelp}
-                        onClose={() => setShowHelp(false)}
-                        puzzleType={puzzleType}
-                    />
-                )}
-            </AnimatePresence>
-        </div>
-    </Layout>
-);
+            </div>
+        </Layout>
+    );
 };
 
 export default GamePage;
