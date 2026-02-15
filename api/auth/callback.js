@@ -44,13 +44,16 @@ export default async function handler(req, res) {
 
         const html = `
         <html>
-            <body style="background: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
-                <h1>✅ Login Successful!</h1>
-                <p>Token Generated. Click below to finish.</p>
-                <a href="/?login=success&token=${token}" style="padding: 15px 30px; background: #0070f3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-                    ENTER APP
+            <head>
+                <meta http-equiv="refresh" content="3;url=/?login=success&token=${token}" />
+            </head>
+            <body style="background: #220000; color: #ffcccc; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+                <h1 style="color: #ff0000; font-size: 40px;">🛑 LOGIN SUCCESS 🛑</h1>
+                <p>Redirecting in 3 seconds...</p>
+                <a href="/?login=success&token=${token}" style="padding: 20px 40px; background: #ff0000; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 20px;">
+                    CLICK TO ENTER APP
                 </a>
-                <p style="margin-top: 20px; color: #666; font-size: 12px;">Token: ${token.substring(0, 10)}...</p>
+                <p style="margin-top: 20px; color: #995555; font-size: 12px;">Token: ${token.substring(0, 10)}...</p>
             </body>
         </html>
         `;

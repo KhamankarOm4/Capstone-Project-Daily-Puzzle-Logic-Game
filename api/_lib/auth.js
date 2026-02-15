@@ -59,6 +59,6 @@ export function verifyToken(req) {
         return decoded;
     } catch (err) {
         console.error('verifyToken: JWT Verification failed:', err.message);
-        return null;
+        return { error: err.message }; // Return the specific error
     }
 }
