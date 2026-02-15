@@ -8,6 +8,7 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
 import DebugAuthPage from './pages/DebugAuthPage';
+import DebugTrace from './pages/DebugTrace';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -90,6 +91,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/debug-auth" element={<DebugAuthPage />} />
+        <Route path="/debug-trace" element={<DebugTrace />} />
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
         <Route
           path="/"

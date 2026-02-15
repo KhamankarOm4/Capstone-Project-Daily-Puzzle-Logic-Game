@@ -76,6 +76,9 @@ const LoginPage = () => {
                     >
                         [debug: check connection]
                     </button>
+                    <a href="/debug-trace" className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors block mt-2">
+                        [debug: open trace tool]
+                    </a>
                 </div>
             </motion.div>
         </div>
