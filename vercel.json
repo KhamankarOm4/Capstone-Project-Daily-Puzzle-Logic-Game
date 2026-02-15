@@ -1,8 +1,8 @@
 {
     "rewrites": [
         {
-            "source": "/api/auth/callback",
-            "destination": "/api/auth/callback.js"
+            "source": "/api/(.*)",
+            "destination": "/api/$1"
         },
         {
             "source": "/((?!api/|_next/|static/|favicon.ico).*)",
