@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const userPayload = verifyToken(req);
 
     if (!userPayload) {
-        return res.status(401).json({ error: 'Not authenticated' });
+        return res.status(401).json({ error: 'Not authenticated: Invalid or missing token' });
     }
 
     try {
@@ -15,12 +15,12 @@ export default async function handler(req, res) {
         });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found in database' });
         }
 
         res.status(200).json(user);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('User Session Error:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 }
