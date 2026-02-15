@@ -6,19 +6,23 @@ const SECRET = process.env.SESSION_SECRET || 'super-secret-key';
 const COOKIE_NAME = 'auth_token';
 
 export function setTokenCookie(res, token) {
-    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
-    console.log(`Debug: NODE_ENV=${process.env.NODE_ENV}, VERCEL=${process.env.VERCEL}, isProduction=${isProduction}`);
+    const isProduction =
+        process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
 
     const cookie = serialize(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: isProduction, // Must be true on Vercel
+        secure: true,              // MUST be true on HTTPS
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 1 week
-        sameSite: 'none', // Required for some OAuth flows, must be lowercase
+        maxAge: 60 * 60 * 24 * 7,
+        sameSite: 'none',          // REQUIRED for OAuth
+        domain: isProduction
+            ? 'capstone-project-daily-puzzle-logic-taupe.vercel.app'
+            : undefined,
     });
-    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: none)`);
+
     res.setHeader('Set-Cookie', cookie);
 }
+
 
 export function removeTokenCookie(res) {
     const cookie = serialize(COOKIE_NAME, '', {
