@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "vite",
     "server": "node server/src/index.js",
-    "build": "tsc -b && vite build",
+    "build": "npx prisma generate && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "postinstall": "prisma generate"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
