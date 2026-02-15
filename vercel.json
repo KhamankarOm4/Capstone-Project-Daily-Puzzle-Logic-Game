@@ -13,7 +13,7 @@
             "destination": "/api/$1"
         },
         {
-            "source": "/((?!api/|_next/|static/|favicon.ico).*)",
+            "source": "/((?!api/|_next/|static/|favicon.ico|src/|node_modules/|@.*|.*\\..*).*)",
             "destination": "/index.html"
         }
     ]
