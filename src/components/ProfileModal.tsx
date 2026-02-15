@@ -34,14 +34,22 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
 
         try {
             const token = localStorage.getItem('auth_token');
-            const headers: HeadersInit = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+            // The original code defined headers outside and then passed it.
+            // The instruction's snippet suggests defining headers inline.
+            // Also, the snippet introduces a 'payload' variable which is not defined.
+            // Assuming the primary intent is to ensure 'credentials: include' is present
+            // and to refactor the headers as shown in the snippet, while also
+            // correctly passing the user data for the body.
+            const payload = { name, username, mobile }; // Define payload based on existing state
 
             const response = await fetch('/api/user/profile', {
                 method: 'PUT',
-                headers,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : '',
+                },
+                body: JSON.stringify(payload),
                 credentials: 'include',
-                body: JSON.stringify({ name, username, mobile }),
             });
 
             if (!response.ok) {
