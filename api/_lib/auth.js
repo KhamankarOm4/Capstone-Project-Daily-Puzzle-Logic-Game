@@ -2,6 +2,9 @@
 import jwt from 'jsonwebtoken';
 import { serialize, parse } from 'cookie';
 
+const SECRET = process.env.SESSION_SECRET || 'super-secret-key';
+const COOKIE_NAME = 'auth_token';
+
 export function setTokenCookie(res, token) {
     const isProduction = process.env.NODE_ENV === 'production';
     const cookie = serialize(COOKIE_NAME, token, {
