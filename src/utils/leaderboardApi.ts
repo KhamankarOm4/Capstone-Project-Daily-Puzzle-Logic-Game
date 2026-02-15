@@ -66,7 +66,10 @@ export const fetchLeaderboard = async (
         if (date) params.set('date', date);
         params.set('limit', limit.toString());
 
-        const response = await fetch(`${API_BASE}/leaderboard?${params}`);
+        const response = await fetch(`${API_BASE}/leaderboard?${params}`, {
+            headers,
+            credentials: 'include',
+        });
 
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');
@@ -85,7 +88,10 @@ export const fetchUserScores = async (
     userId: string
 ): Promise<{ user_id: string; total: number; scores: LeaderboardEntry[] }> => {
     try {
-        const response = await fetch(`${API_BASE}/leaderboard/${encodeURIComponent(userId)}`);
+        const response = await fetch(`${API_BASE}/leaderboard/${encodeURIComponent(userId)}`, {
+            headers,
+            credentials: 'include',
+        });
 
         if (!response.ok) {
             throw new Error('Failed to fetch user scores');
