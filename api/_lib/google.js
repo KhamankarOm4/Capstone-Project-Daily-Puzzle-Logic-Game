@@ -1,83 +1,63 @@
-
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-// Use dynamic callback URL based on environment, default to localhost for dev
-// In Vercel production, this should be set to the production URL
-const BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
-const REDIRECT_URI = `${BASE_URL}/api/auth/google/callback`;
 
-export function getRedirectUri(host) {
-    let currentRedirectUri = REDIRECT_URI;
-    if (host && !process.env.VERCEL_URL) {
-        // If we are getting a specific host (like localhost:3001) and not in Vercel Prod
-        const protocol = host.includes('localhost') ? 'http' : 'https';
-        currentRedirectUri = `${protocol}://${host}/api/auth/google/callback`;
-        console.log('Dynamic Redirect URI:', currentRedirectUri);
-    }
-    return currentRedirectUri;
+// 🔥 STATIC REDIRECT URI FIX
+const REDIRECT_URI =
+  process.env.NODE_ENV === "production"
+    ? "https://capstone-project-daily-puzzle-logic-taupe.vercel.app/api/auth/google/callback"
+    : "http://localhost:3000/api/auth/google/callback";
+
+export function getGoogleAuthURL() {
+  const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
+  const options = {
+    redirect_uri: REDIRECT_URI,
+    client_id: GOOGLE_CLIENT_ID,
+    access_type: "offline",
+    response_type: "code",
+    prompt: "consent",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ].join(" "),
+  };
+
+  const qs = new URLSearchParams(options);
+  return `${rootUrl}?${qs.toString()}`;
 }
 
-export function getGoogleAuthURL(host) {
-    const currentRedirectUri = getRedirectUri(host);
-    const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+export async function getGoogleUser(code) {
+  const tokenUrl = "https://oauth2.googleapis.com/token";
 
-    console.log('--- Google Auth Debug ---');
-    console.log('Client ID:', GOOGLE_CLIENT_ID ? (GOOGLE_CLIENT_ID.substring(0, 10) + '...') : 'UNDEFINED');
-    console.log('Redirect URI:', REDIRECT_URI);
-    console.log('-------------------------');
+  const values = {
+    code,
+    client_id: GOOGLE_CLIENT_ID,
+    client_secret: GOOGLE_CLIENT_SECRET,
+    redirect_uri: REDIRECT_URI,
+    grant_type: "authorization_code",
+  };
 
-    const options = {
-        redirect_uri: currentRedirectUri,
-        client_id: GOOGLE_CLIENT_ID,
-        access_type: 'offline',
-        response_type: 'code',
-        prompt: 'consent',
-        scope: [
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/userinfo.email',
-        ].join(' '),
-    };
+  const tokenRes = await fetch(tokenUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams(values).toString(),
+  });
 
-    const qs = new URLSearchParams(options);
-    return `${rootUrl}?${qs.toString()}`;
-}
+  if (!tokenRes.ok) {
+    throw new Error("Failed to fetch token");
+  }
 
-export async function getGoogleUser(code, redirectUri = REDIRECT_URI) {
-    const tokenUrl = 'https://oauth2.googleapis.com/token';
-    const values = {
-        code,
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code',
-    };
+  const { access_token } = await tokenRes.json();
 
-    const tokenRes = await fetch(tokenUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams(values).toString(),
-    });
+  const userRes = await fetch(
+    `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
+  );
 
-    if (!tokenRes.ok) {
-        throw new Error('Failed to fetch token');
-    }
+  if (!userRes.ok) {
+    throw new Error("Failed to fetch user");
+  }
 
-    const { access_token, id_token } = await tokenRes.json();
-
-    const userRes = await fetch(
-        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
-        {
-            headers: {
-                Authorization: `Bearer ${id_token}`,
-            },
-        }
-    );
-
-    if (!userRes.ok) {
-        throw new Error('Failed to fetch user');
-    }
-
-    return await userRes.json();
+  return await userRes.json();
 }
