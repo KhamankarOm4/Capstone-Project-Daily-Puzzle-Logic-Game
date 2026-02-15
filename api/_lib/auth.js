@@ -6,8 +6,8 @@ const SECRET = process.env.SESSION_SECRET || 'super-secret-key';
 const COOKIE_NAME = 'auth_token';
 
 export function setTokenCookie(res, token) {
-    const isProduction = process.env.NODE_ENV === 'production';
-    console.log(`Debug: NODE_ENV=${process.env.NODE_ENV}, isProduction=${isProduction}`);
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
+    console.log(`Debug: NODE_ENV=${process.env.NODE_ENV}, VERCEL=${process.env.VERCEL}, isProduction=${isProduction}`);
 
     const cookie = serialize(COOKIE_NAME, token, {
         httpOnly: true,
