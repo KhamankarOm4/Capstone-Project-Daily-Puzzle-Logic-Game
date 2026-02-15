@@ -53,10 +53,30 @@ const LoginPage = () => {
                     </Button>
                 </div>
 
-                <p className="text-xs text-white/40 mt-4">
-                    By entering, you accept our Terms of Service.
-                </p>
-            </motion.div>
+                {/* Debugging Tool */}
+                <div className="relative z-10 w-full max-w-md text-center">
+                    <button
+                        onClick={async () => {
+                            const token = localStorage.getItem('auth_token');
+                            if (!token) {
+                                alert('No token found in LocalStorage.');
+                                return;
+                            }
+                            try {
+                                const res = await fetch('/api/auth/user', {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                const text = await res.text();
+                                alert(`Status: ${res.status}\nBody: ${text.substring(0, 100)}`);
+                            } catch (e: any) {
+                                alert(`Error: ${e.message}`);
+                            }
+                        }}
+                        className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors"
+                    >
+                        [debug: check connection]
+                    </button>
+                </div>
         </div>
     );
 };
