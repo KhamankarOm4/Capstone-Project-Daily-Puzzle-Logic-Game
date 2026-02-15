@@ -1,6 +1,6 @@
-import { getGoogleUser } from '../../_lib/google.js';
-import prisma from '../../_lib/prisma.js';
-import { generateToken, setTokenCookie } from '../../_lib/auth.js';
+import { getGoogleUser } from '../_lib/google.js';
+import prisma from '../_lib/prisma.js';
+import { generateToken, setTokenCookie } from '../_lib/auth.js';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {

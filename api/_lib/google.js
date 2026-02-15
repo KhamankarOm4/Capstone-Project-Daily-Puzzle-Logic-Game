@@ -3,61 +3,61 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 // 🔥 STATIC REDIRECT URI FIX
 const REDIRECT_URI =
-  process.env.NODE_ENV === "production"
-    ? "https://capstone-project-daily-puzzle-logic-taupe.vercel.app/api/auth/google/callback"
-    : "http://localhost:3000/api/auth/google/callback";
+    process.env.NODE_ENV === "production"
+        ? "https://capstone-project-daily-puzzle-logic-taupe.vercel.app/api/auth/callback"
+        : "http://localhost:3000/api/auth/callback";
 
 export function getGoogleAuthURL() {
-  const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
-  const options = {
-    redirect_uri: REDIRECT_URI,
-    client_id: GOOGLE_CLIENT_ID,
-    access_type: "offline",
-    response_type: "code",
-    prompt: "consent",
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.profile",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ].join(" "),
-  };
+    const options = {
+        redirect_uri: REDIRECT_URI,
+        client_id: GOOGLE_CLIENT_ID,
+        access_type: "offline",
+        response_type: "code",
+        prompt: "consent",
+        scope: [
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/userinfo.email",
+        ].join(" "),
+    };
 
-  const qs = new URLSearchParams(options);
-  return `${rootUrl}?${qs.toString()}`;
+    const qs = new URLSearchParams(options);
+    return `${rootUrl}?${qs.toString()}`;
 }
 
 export async function getGoogleUser(code) {
-  const tokenUrl = "https://oauth2.googleapis.com/token";
+    const tokenUrl = "https://oauth2.googleapis.com/token";
 
-  const values = {
-    code,
-    client_id: GOOGLE_CLIENT_ID,
-    client_secret: GOOGLE_CLIENT_SECRET,
-    redirect_uri: REDIRECT_URI,
-    grant_type: "authorization_code",
-  };
+    const values = {
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: REDIRECT_URI,
+        grant_type: "authorization_code",
+    };
 
-  const tokenRes = await fetch(tokenUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams(values).toString(),
-  });
+    const tokenRes = await fetch(tokenUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(values).toString(),
+    });
 
-  if (!tokenRes.ok) {
-    throw new Error("Failed to fetch token");
-  }
+    if (!tokenRes.ok) {
+        throw new Error("Failed to fetch token");
+    }
 
-  const { access_token } = await tokenRes.json();
+    const { access_token } = await tokenRes.json();
 
-  const userRes = await fetch(
-    `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
-  );
+    const userRes = await fetch(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`
+    );
 
-  if (!userRes.ok) {
-    throw new Error("Failed to fetch user");
-  }
+    if (!userRes.ok) {
+        throw new Error("Failed to fetch user");
+    }
 
-  return await userRes.json();
+    return await userRes.json();
 }
