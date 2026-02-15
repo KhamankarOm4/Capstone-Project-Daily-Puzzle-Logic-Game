@@ -2,18 +2,16 @@
 import jwt from 'jsonwebtoken';
 import { serialize, parse } from 'cookie';
 
-const SECRET = process.env.SESSION_SECRET || 'super-secret-key';
-const COOKIE_NAME = 'auth_token';
-
 export function setTokenCookie(res, token) {
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookie = serialize(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: isProduction,
         path: '/',
         maxAge: 60 * 60 * 24 * 7, // 1 week
-        sameSite: 'lax',
+        sameSite: isProduction ? 'None' : 'Lax',
     });
-    console.log(`Setting Auth Cookie (Secure: ${process.env.NODE_ENV === 'production'})`);
+    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: ${isProduction ? 'None' : 'Lax'})`);
     res.setHeader('Set-Cookie', cookie);
 }
 
