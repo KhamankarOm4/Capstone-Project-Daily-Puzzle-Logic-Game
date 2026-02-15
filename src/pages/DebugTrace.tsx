@@ -29,6 +29,7 @@ const DebugTrace = () => {
             <div className="space-x-4 mb-6">
                 <button onClick={() => testEndpoint('/api/hello')} className="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700">Test /api/hello</button>
                 <button onClick={() => testEndpoint('/api/debug_db')} className="bg-red-900 px-3 py-1 rounded hover:bg-red-800">Test Database</button>
+                <button onClick={() => testEndpoint('/api/auth/callback')} className="bg-yellow-900 px-3 py-1 rounded hover:bg-yellow-800">Test Callback Reachability</button>
                 <button onClick={() => testEndpoint('/api/auth/user')} className="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700">Test /api/auth/user</button>
                 <Link to="/login" className="text-blue-400">Back to Login</Link>
             </div>
