@@ -38,6 +38,8 @@ export default async function handler(req, res) {
             console.log('User found in DB:', user.id);
         }
 
+        const token = generateToken(user);
+        setTokenCookie(res, token);
         console.log('Token generated. Sending manual confirmation page.');
 
         const html = `
@@ -45,7 +47,7 @@ export default async function handler(req, res) {
             <body style="background: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
                 <h1>✅ Login Successful!</h1>
                 <p>Token Generated. Click below to finish.</p>
-                <a href="/?token=${token}" style="padding: 15px 30px; background: #0070f3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                <a href="/?login=success&token=${token}" style="padding: 15px 30px; background: #0070f3; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     ENTER APP
                 </a>
                 <p style="margin-top: 20px; color: #666; font-size: 12px;">Token: ${token.substring(0, 10)}...</p>
