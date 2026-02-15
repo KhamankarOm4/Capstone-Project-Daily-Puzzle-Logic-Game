@@ -7,14 +7,16 @@ const COOKIE_NAME = 'auth_token';
 
 export function setTokenCookie(res, token) {
     const isProduction = process.env.NODE_ENV === 'production';
+    console.log(`Debug: NODE_ENV=${process.env.NODE_ENV}, isProduction=${isProduction}`);
+
     const cookie = serialize(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: isProduction,
+        secure: isProduction, // Must be true on Vercel
         path: '/',
         maxAge: 60 * 60 * 24 * 7, // 1 week
-        sameSite: isProduction ? 'None' : 'Lax',
+        sameSite: 'Lax', // Safer for redirects than None
     });
-    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: ${isProduction ? 'None' : 'Lax'})`);
+    console.log(`Setting Auth Cookie (Length: ${token.length}, Secure: ${isProduction}, SameSite: Lax)`);
     res.setHeader('Set-Cookie', cookie);
 }
 
