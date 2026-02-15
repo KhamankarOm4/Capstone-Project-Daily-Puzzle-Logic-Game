@@ -13,6 +13,7 @@ export function setTokenCookie(res, token) {
         maxAge: 60 * 60 * 24 * 7, // 1 week
         sameSite: 'lax',
     });
+    console.log(`Setting Auth Cookie (Secure: ${process.env.NODE_ENV === 'production'})`);
     res.setHeader('Set-Cookie', cookie);
 }
 
@@ -34,10 +35,17 @@ export function generateToken(user) {
 export function verifyToken(req) {
     const cookies = parse(req.headers.cookie || '');
     const token = cookies[COOKIE_NAME];
-    if (!token) return null;
+
+    if (!token) {
+        console.log('verifyToken: No token found in cookies. Cookies keys:', Object.keys(cookies));
+        return null;
+    }
+
     try {
-        return jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET);
+        return decoded;
     } catch (err) {
+        console.error('verifyToken: JWT Verification failed:', err.message);
         return null;
     }
 }
