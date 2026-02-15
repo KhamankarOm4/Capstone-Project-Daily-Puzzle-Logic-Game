@@ -220,11 +220,13 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
             // Sync puzzle completion with backend ONLY if not practice
             if (mode !== 'practice') {
                 try {
+                    const token = localStorage.getItem('auth_token');
+                    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
                     const response = await fetch('/api/puzzle/complete', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers,
                         body: JSON.stringify({ score: score.finalScore }),
                         credentials: 'include',
                     });

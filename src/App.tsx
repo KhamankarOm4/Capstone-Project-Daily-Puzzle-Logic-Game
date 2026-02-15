@@ -22,15 +22,37 @@ function App() {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        // 1. Check for token in URL (from Google Login redirect)
+        const params = new URLSearchParams(window.location.search);
+        const urlToken = params.get('token');
+
+        if (urlToken) {
+          localStorage.setItem('auth_token', urlToken);
+          // Clean URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // 2. Prepare headers with fallback token
+        const token = localStorage.getItem('auth_token');
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch('/api/auth/user', {
           credentials: 'include',
+          headers, // Send the token!
         });
+
         if (response.ok) {
           const userData = await response.json();
           if (userData) {
             try {
               const dashboardResponse = await fetch('/api/user/dashboard', {
-                credentials: 'include'
+                credentials: 'include',
+                headers, // Send here too
               });
               if (dashboardResponse.ok) {
                 const dashboardData = await dashboardResponse.json();
@@ -43,6 +65,9 @@ function App() {
               dispatch(login(userData));
             }
           }
+        } else {
+          // Valid token but invalid session? strict mode might want to clear token
+          // localStorage.removeItem('auth_token');
         }
       } catch (error) {
         console.error('Failed to check session:', error);

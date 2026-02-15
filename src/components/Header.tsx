@@ -30,7 +30,14 @@ const Header = () => {
 
     const handleLogout = async () => {
         try {
-            await fetch('/api/auth/logout', { credentials: 'include' });
+            const token = localStorage.getItem('auth_token');
+            const headers: HeadersInit = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            await fetch('/api/auth/logout', {
+                credentials: 'include',
+                headers
+            });
         } catch (e) {
             console.error('Logout failed', e);
         }

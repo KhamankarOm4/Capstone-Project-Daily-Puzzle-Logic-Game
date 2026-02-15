@@ -40,9 +40,10 @@ export default async function handler(req, res) {
 
         const token = generateToken(user);
         setTokenCookie(res, token);
-        console.log('Token cookie set. Manually redirecting to home...');
+        console.log('Token cookie set. Manually redirecting to home with token fallback...');
 
-        res.setHeader('Location', '/?login=success');
+        // Fallback: Send token in URL fragment/query for frontend to grab if cookies fail
+        res.setHeader('Location', `/?login=success&token=${token}`);
         res.status(302).end();
     } catch (error) {
         console.error('Auth Error Trace:', error);

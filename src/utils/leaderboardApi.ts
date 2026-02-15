@@ -27,10 +27,14 @@ export const submitScore = async (
     score: number,
     timeTaken: number
 ): Promise<{ message: string; entry: LeaderboardEntry }> => {
+    const token = localStorage.getItem('auth_token');
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (token) { headers['Authorization'] = `Bearer ${token}`; }
+
     try {
         const response = await fetch(`${API_BASE}/leaderboard`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             credentials: 'include',
             body: JSON.stringify({
                 user_id: userId,

@@ -36,11 +36,21 @@ export function generateToken(user) {
 }
 
 export function verifyToken(req) {
-    const cookies = parse(req.headers.cookie || '');
-    const token = cookies[COOKIE_NAME];
+    // 1. Try reading from Authorization Header (Bearer Token)
+    const authHeader = req.headers.authorization;
+    let token;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+        console.log('verifyToken: Found Bearer token in header');
+    } else {
+        // 2. Fallback to Cookie
+        const cookies = parse(req.headers.cookie || '');
+        token = cookies[COOKIE_NAME];
+    }
 
     if (!token) {
-        console.log('verifyToken: No token found in cookies. Cookies keys:', Object.keys(cookies));
+        console.log('verifyToken: No token found in headers or cookies.');
         return null;
     }
 

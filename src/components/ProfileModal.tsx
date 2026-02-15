@@ -33,9 +33,13 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
         setError('');
 
         try {
+            const token = localStorage.getItem('auth_token');
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
             const response = await fetch('/api/user/profile', {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 credentials: 'include',
                 body: JSON.stringify({ name, username, mobile }),
             });
