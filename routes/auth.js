@@ -79,19 +79,18 @@ router.get('/google/callback', async (req, res) => {
         log('Generating Token...');
         const token = generateToken(user);
 
-        log('Setting Cookie manually...');
-        res.setHeader('Set-Cookie', serialize('auth_token', token, {
-            httpOnly: true,
-            secure: true, // MUST be true on HTTPS
-            sameSite: 'none', // REQUIRED for cross-site OAuth redirects
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7 // 7 days
-        }));
-        log('Cookie header set.');
-
-        const returnUrl = origin ? `${origin.replace(/\/$/, '')}/?login=success&token=${encodeURIComponent(token)}` : `/?login=success&token=${encodeURIComponent(token)}`;
-        // IMPORTANT: return here
-        return res.redirect('https://capstone-project-daily-puzzle-logic-game-kzmt.onrender.com');
+        // IMPORTANT: write header + end response manually
+        res.writeHead(302, {
+            'Set-Cookie': serialize('auth_token', token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                path: '/',
+                maxAge: 60 * 60 * 24 * 7
+            }),
+            'Location': 'https://capstone-project-daily-puzzle-logic-game-kzmt.onrender.com'
+        });
+        res.end();
 
     } catch (error) {
         log(`🔥 CRITICAL ERROR: ${error.message}`);
