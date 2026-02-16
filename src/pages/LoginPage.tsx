@@ -53,34 +53,7 @@ const LoginPage = () => {
                     </Button>
                 </div>
 
-                {/* Debugging Tool */}
-                <div className="relative z-10 w-full max-w-md text-center">
-                    <button
-                        onClick={async () => {
-                            const token = localStorage.getItem('auth_token');
-                            if (!token) {
-                                alert('No token found in LocalStorage.');
-                                return;
-                            }
-                            try {
-                                const res = await fetch('/auth/user', {
-                                    headers: { 'Authorization': `Bearer ${token}` },
-                                    credentials: 'include'
-                                });
-                                const text = await res.text();
-                                alert(`Status: ${res.status}\nBody: ${text.substring(0, 100)}`);
-                            } catch (e: any) {
-                                alert(`Error: ${e.message}`);
-                            }
-                        }}
-                        className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors"
-                    >
-                        [debug: check connection]
-                    </button>
-                    <a href="/debug-trace" className="text-white/20 hover:text-white/50 text-xs font-mono transition-colors block mt-2">
-                        [debug: open trace tool]
-                    </a>
-                </div>
+
             </motion.div>
         </div>
     );
