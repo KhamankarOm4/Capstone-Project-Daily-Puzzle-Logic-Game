@@ -54,12 +54,11 @@ app.use('/leaderboard', leaderboardRoutes);
 app.use('/puzzle', puzzleRoutes);
 
 // Serve static files from React build
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(express.static('dist'));
 
 // SPA fallback - serve index.html for all non-API routes
-// Express 5 syntax: use '(.*)' instead of '*' for catch-all routes
-app.get('/(.*)', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve('dist', 'index.html'));
 });
 
 // Start server
