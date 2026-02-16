@@ -57,7 +57,8 @@ app.use('/puzzle', puzzleRoutes);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // SPA fallback - serve index.html for all non-API routes
-app.get('*', (req, res) => {
+// Express 5 syntax: use '(.*)' instead of '*' for catch-all routes
+app.get('/(.*)', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
 });
 
