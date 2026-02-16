@@ -64,7 +64,8 @@ const LoginPage = () => {
                             }
                             try {
                                 const res = await fetch('/auth/user', {
-                                    headers: { 'Authorization': `Bearer ${token}` }
+                                    headers: { 'Authorization': `Bearer ${token}` },
+                                    credentials: 'include'
                                 });
                                 const text = await res.text();
                                 alert(`Status: ${res.status}\nBody: ${text.substring(0, 100)}`);

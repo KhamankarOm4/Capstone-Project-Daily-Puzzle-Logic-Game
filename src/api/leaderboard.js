@@ -15,6 +15,7 @@ export const submitScore = async (userId, date, score, timeTaken) => {
                 time_taken: timeTaken,
                 date: date // Use the provided date
             }),
+            credentials: 'include',
         });
 
         if (!response.ok) {
@@ -31,7 +32,9 @@ export const submitScore = async (userId, date, score, timeTaken) => {
 
 export const getLeaderboard = async () => {
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+            credentials: 'include',
+        });
 
         if (!response.ok) {
             throw new Error('Failed to fetch leaderboard');
