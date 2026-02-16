@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = '';
 
 export interface LeaderboardEntry {
     rank?: number;
@@ -66,6 +66,10 @@ export const fetchLeaderboard = async (
         if (date) params.set('date', date);
         params.set('limit', limit.toString());
 
+        const token = localStorage.getItem('auth_token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(`${API_BASE}/leaderboard?${params}`, {
             headers,
             credentials: 'include',
@@ -88,6 +92,10 @@ export const fetchUserScores = async (
     userId: string
 ): Promise<{ user_id: string; total: number; scores: LeaderboardEntry[] }> => {
     try {
+        const token = localStorage.getItem('auth_token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         const response = await fetch(`${API_BASE}/leaderboard/${encodeURIComponent(userId)}`, {
             headers,
             credentials: 'include',

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-const API_URL = 'http://localhost:3001/api/leaderboard';
+const API_URL = '/leaderboard';
 
 export const submitScore = async (userId, date, score, timeTaken) => {
     try {

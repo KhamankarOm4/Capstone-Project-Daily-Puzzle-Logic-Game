@@ -34,7 +34,7 @@ const Header = () => {
             const headers: HeadersInit = {};
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
-            await fetch('/api/auth/logout', {
+            await fetch('/auth/logout', {
                 method: 'POST',
                 credentials: 'include',
                 headers

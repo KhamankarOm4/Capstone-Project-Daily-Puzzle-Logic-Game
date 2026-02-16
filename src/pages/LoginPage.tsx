@@ -3,7 +3,7 @@ import Button from '../components/ui/Button';
 
 const LoginPage = () => {
     const handleGoogleLogin = () => {
-        window.location.href = '/api/auth/google';
+        window.location.href = '/auth/google';
     };
 
     return (
@@ -63,7 +63,7 @@ const LoginPage = () => {
                                 return;
                             }
                             try {
-                                const res = await fetch('/api/auth/user', {
+                                const res = await fetch('/auth/user', {
                                     headers: { 'Authorization': `Bearer ${token}` }
                                 });
                                 const text = await res.text();

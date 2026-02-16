@@ -1,21 +1,18 @@
+import express from 'express';
+import { requireAuth } from '../lib/auth.js';
+import prisma from '../lib/prisma.js';
 
-import prisma from '../_lib/prisma.js';
-import { verifyToken } from '../_lib/auth.js';
+const router = express.Router();
 
-export default async function handler(req, res) {
-    if (req.method !== 'PUT') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
-
-    const userPayload = verifyToken(req);
-    if (!userPayload) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const userId = userPayload.id;
+/**
+ * PUT /user/profile
+ * Update user profile (requires auth)
+ */
+router.put('/profile', requireAuth(), async (req, res) => {
+    const userId = req.user.id;
     let { name, username, mobile } = req.body;
 
-    // Sanitize inputs
+    // Sanitize inputs: convert empty strings to null
     if (typeof name === 'string' && name.trim() === '') name = null;
     if (typeof username === 'string' && username.trim() === '') username = null;
     if (typeof mobile === 'string' && mobile.trim() === '') mobile = null;
@@ -41,4 +38,29 @@ export default async function handler(req, res) {
         console.error('Update profile error', e);
         res.status(500).json({ error: `Update failed: ${e.message}` });
     }
-}
+});
+
+/**
+ * GET /user/dashboard
+ * Get user dashboard data (requires auth)
+ */
+router.get('/dashboard', requireAuth(), async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (e) {
+        console.error('Get dashboard error', e);
+        res.status(500).json({ error: `Failed to fetch user: ${e.message}` });
+    }
+});
+
+export default router;

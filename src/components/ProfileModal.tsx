@@ -42,7 +42,7 @@ const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
             // correctly passing the user data for the body.
             const payload = { name, username, mobile }; // Define payload based on existing state
 
-            const response = await fetch('/api/user/profile', {
+            const response = await fetch('/user/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

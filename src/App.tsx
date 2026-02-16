@@ -43,7 +43,7 @@ function App() {
           headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch('/api/auth/user', {
+        const response = await fetch('/auth/user', {
           credentials: 'include',
           headers, // Send the token!
         });
@@ -52,7 +52,7 @@ function App() {
           const userData = await response.json();
           if (userData) {
             try {
-              const dashboardResponse = await fetch('/api/user/dashboard', {
+              const dashboardResponse = await fetch('/user/dashboard', {
                 credentials: 'include',
                 headers, // Send here too
               });

@@ -224,7 +224,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                     const headers: HeadersInit = { 'Content-Type': 'application/json' };
                     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-                    const response = await fetch('/api/puzzle/complete', {
+                    const response = await fetch('/puzzle/complete', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
