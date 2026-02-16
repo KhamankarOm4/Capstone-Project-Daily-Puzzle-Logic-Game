@@ -37,6 +37,12 @@ export default defineConfig({
         ]
       },
       workbox: {
+        navigateFallbackDenylist: [
+          /^\/auth/,
+          /^\/user/,
+          /^\/leaderboard/,
+          /^\/puzzle/
+        ],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
