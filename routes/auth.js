@@ -1,6 +1,7 @@
 import express from 'express';
 import { getGoogleAuthURL, getGoogleUser } from '../lib/google.js';
-import { generateToken, setTokenCookie, removeTokenCookie, verifyToken } from '../lib/auth.js';
+import { generateToken, removeTokenCookie, verifyToken } from '../lib/auth.js';
+import { serialize } from 'cookie';
 import prisma from '../lib/prisma.js';
 
 const router = express.Router();
@@ -78,29 +79,19 @@ router.get('/google/callback', async (req, res) => {
         log('Generating Token...');
         const token = generateToken(user);
 
-        log('Setting Cookie...');
-        setTokenCookie(res, token);
-        log('Cookie set.');
+        log('Setting Cookie manually...');
+        res.setHeader('Set-Cookie', serialize('auth_token', token, {
+            httpOnly: true,
+            secure: true, // MUST be true on HTTPS
+            sameSite: 'none', // REQUIRED for cross-site OAuth redirects
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+        }));
+        log('Cookie header set.');
 
         const returnUrl = origin ? `${origin.replace(/\/$/, '')}/?login=success&token=${encodeURIComponent(token)}` : `/?login=success&token=${encodeURIComponent(token)}`;
-        const html = `
-        <html>
-            <body style="background: #002200; color: #00ff00; font-family: monospace; padding: 20px;">
-                <h1>✅ AUTH SUCCESS</h1>
-                <div style="border: 1px solid #004400; padding: 10px; margin: 10px 0;">
-                    <strong>Token:</strong> ${token.substring(0, 20)}...
-                </div>
-                <a href="${returnUrl}" style="display: block; padding: 20px; background: #00ff00; color: black; text-align: center; font-weight: bold; text-decoration: none; font-size: 20px; margin: 20px 0;">
-                    ENTER GAME NOW
-                </a>
-                <h3>Execution Logs:</h3>
-                <pre style="color: #88ff88;">${logs.join('\n')}</pre>
-            </body>
-        </html>
-        `;
-
-        res.setHeader('Content-Type', 'text/html');
-        res.status(200).send(html);
+        // IMPORTANT: return here
+        return res.redirect('https://capstone-project-daily-puzzle-logic-game-kzmt.onrender.com');
 
     } catch (error) {
         log(`🔥 CRITICAL ERROR: ${error.message}`);
