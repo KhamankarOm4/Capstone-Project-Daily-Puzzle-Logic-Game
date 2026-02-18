@@ -26,12 +26,12 @@ const Button = ({
     const baseStyles = "inline-flex items-center justify-center font-bold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden group";
 
     const variants = {
-        primary: "bg-gradient-to-r from-accent via-[#8e44ad] to-accent-hover text-white shadow-[0_0_20px_rgba(112,0,255,0.3)] hover:shadow-[0_0_30px_rgba(112,0,255,0.5)] border border-white/10",
-        secondary: "bg-surface-100 backdrop-blur-md text-neutral-200 border border-white/10 hover:border-white/30 hover:text-white hover:bg-surface-200 shadow-lg shadow-black/20",
-        danger: "bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.2)]",
-        ghost: "bg-transparent text-neutral-400 hover:text-white hover:bg-white/5",
+        primary: "bg-gradient-to-r from-accent via-[#8e44ad] to-accent-hover text-white shadow-[0_0_20px_rgba(112,0,255,0.3)] hover:shadow-[0_0_30px_rgba(112,0,255,0.5)] border border-white/10 dark:border-white/10 border-black/5",
+        secondary: "bg-surface-100 backdrop-blur-md text-neutral-800 dark:text-neutral-200 border border-black/5 dark:border-white/10 hover:border-accent/30 dark:hover:border-white/30 hover:text-accent-hover dark:hover:text-white hover:bg-surface-200 shadow-lg shadow-black/5 dark:shadow-black/20",
+        danger: "bg-red-500/10 text-red-600 dark:text-red-500 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.2)]",
+        ghost: "bg-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5",
         google: "bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 shadow-sm",
-        glow: "bg-accent/10 border border-accent/50 text-accent-glow hover:bg-accent/20 hover:shadow-[0_0_25px_rgba(112,0,255,0.6)] hover:border-accent"
+        glow: "bg-accent/10 border border-accent/50 text-accent-hover dark:text-accent-glow hover:bg-accent/20 hover:shadow-[0_0_25px_rgba(112,0,255,0.6)] hover:border-accent"
     };
 
     const sizes = {

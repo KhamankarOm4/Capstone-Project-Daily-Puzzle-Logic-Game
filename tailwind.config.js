@@ -4,35 +4,39 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: '#030014', // Deep Void - Main Background
-                    light: '#0f172a',   // Slate 900 - Fallback/Cards
-                    dark: '#000000',    // Pure Black
+                    DEFAULT: 'var(--color-primary)', // Deep Void - Main Background
+                    light: 'var(--color-primary-light)',   // Slate 900 - Fallback/Cards
+                    dark: 'var(--color-primary-dark)',    // Pure Black
                 },
                 accent: {
-                    DEFAULT: '#7000FF', // Electric Violet
-                    hover: '#5e00d6',
-                    glow: '#B066FF',    // Lighter Violet
-                    cyan: '#00C2FF',    // Cyan - Secondary Accent
+                    DEFAULT: 'var(--color-accent)', // Electric Violet
+                    hover: 'var(--color-accent-hover)',
+                    glow: 'var(--color-accent-glow)',    // Lighter Violet
+                    cyan: 'var(--color-accent-cyan)',    // Cyan - Secondary Accent
                 },
                 surface: {
-                    100: 'rgba(255, 255, 255, 0.03)', // Glass Low
-                    200: 'rgba(255, 255, 255, 0.07)', // Glass Medium
-                    300: 'rgba(255, 255, 255, 0.12)', // Glass High
+                    100: 'var(--color-surface-100)', // Glass Low
+                    200: 'var(--color-surface-200)', // Glass Medium
+                    300: 'var(--color-surface-300)', // Glass High
                 },
                 highlight: {
-                    DEFAULT: '#00C2FF', // Cyan
-                    error: '#ef4444',   // Red
+                    DEFAULT: 'var(--color-highlight)', // Cyan
+                    error: 'var(--color-highlight-error)',   // Red
                 },
                 neutral: {
-                    50: '#ffffff',
-                    100: '#f8fafc',
-                    200: '#cbd5e1', // Cool Gray
-                    300: '#94a3b8',
-                    400: '#64748b',
+                    50: 'var(--color-neutral-50)',
+                    100: 'var(--color-neutral-100)',
+                    200: 'var(--color-neutral-200)', // Cool Gray
+                    300: 'var(--color-neutral-300)',
+                    400: 'var(--color-neutral-400)',
+                    500: 'var(--color-neutral-500)', // Added intermediate gray
+                    800: 'var(--color-neutral-800)', // Added dark gray for light mode text
+                    900: 'var(--color-neutral-900)', // Added darker gray
                 }
             },
             backgroundImage: {

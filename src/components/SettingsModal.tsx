@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSound } from '../contexts/SoundContext';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -8,6 +9,7 @@ interface SettingsModalProps {
 
 const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
     const { isMuted, toggleMute } = useSound();
+    const { theme, toggleTheme } = useTheme();
 
     return (
         <AnimatePresence>
@@ -41,6 +43,38 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
 
                         {/* Content */}
                         <div className="p-6 space-y-6">
+                            {/* Theme Toggle */}
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-neutral-500/10 rounded-lg text-neutral-500 dark:text-neutral-400">
+                                        {theme === 'dark' ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                                            </svg>
+                                        ) : (
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                                            </svg>
+                                        )}
+                                    </div>
+                                    <span className="text-neutral-900 dark:text-white font-medium">Appearance</span>
+                                </div>
+                                <div className="flex items-center bg-neutral-200 dark:bg-black/40 rounded-lg p-1 border border-neutral-300 dark:border-white/10">
+                                    <button
+                                        onClick={() => theme === 'dark' && toggleTheme()}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${theme === 'light' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'}`}
+                                    >
+                                        Light
+                                    </button>
+                                    <button
+                                        onClick={() => theme === 'light' && toggleTheme()}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${theme === 'dark' ? 'bg-white/10 text-white shadow-sm' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'}`}
+                                    >
+                                        Dark
+                                    </button>
+                                </div>
+                            </div>
+
                             {/* Sound Toggle */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">

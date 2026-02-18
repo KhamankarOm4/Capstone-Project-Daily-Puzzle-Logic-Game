@@ -313,7 +313,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                 {/* Header Section */}
                 <div className="text-center space-y-4 relative">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-accent/20 blur-[100px] rounded-full pointer-events-none"></div>
-                    <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-400 drop-shadow-sm tracking-tighter">
+                    <h1 className="relative text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-neutral-900 via-neutral-700 to-neutral-500 dark:from-white dark:via-neutral-200 dark:to-neutral-400 drop-shadow-sm tracking-tighter">
                         Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent to-accent-glow">Puzzle</span>
                     </h1>
 
@@ -323,7 +323,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                             playClick();
                             setShowHelp(true);
                         }}
-                        className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20"
+                        className="absolute right-6 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors z-20"
                         title="How to Play"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
@@ -331,8 +331,8 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                         </svg>
                     </button>
 
-                    <p className="relative text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-                        One challenge. One chance. <span className="text-white font-bold">Prove your logic.</span>
+                    <p className="relative text-neutral-600 dark:text-neutral-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+                        One challenge. One chance. <span className="text-neutral-900 dark:text-white font-bold">Prove your logic.</span>
                     </p>
                 </div>
 
@@ -356,8 +356,8 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                 className="text-center p-16 glass-panel rounded-[2.5rem] max-w-3xl mx-auto relative overflow-hidden group"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-highlight/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                                <h2 className="relative text-3xl font-bold text-white mb-6">Enter the Arena</h2>
-                                <p className="relative text-neutral-300 mb-10 text-lg">Sign in to track your streak, earn points, and climb the global leaderboard.</p>
+                                <h2 className="relative text-3xl font-bold text-neutral-900 dark:text-white mb-6">Enter the Arena</h2>
+                                <p className="relative text-neutral-600 dark:text-neutral-300 mb-10 text-lg">Sign in to track your streak, earn points, and climb the global leaderboard.</p>
                                 <div className="relative">
                                     <Navigate to="/login" />
                                 </div>
@@ -379,8 +379,8 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                 </div>
 
                                 <div>
-                                    <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Mission Complete</h2>
-                                    <p className="text-neutral-300 text-xl">
+                                    <h2 className="text-5xl font-black text-neutral-900 dark:text-white mb-4 tracking-tight">Mission Complete</h2>
+                                    <p className="text-neutral-600 dark:text-neutral-300 text-xl">
                                         {mode === 'practice' ? 'Great practice session! Ready for more?' : 'Excellent work, Agent. The system is secure.'}
                                     </p>
                                 </div>
@@ -393,7 +393,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                                     playClick();
                                                     window.location.href = '/practice';
                                                 }}
-                                                className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-white/10 text-white font-bold border border-white/10 transition-colors"
+                                                className="px-8 py-3 rounded-xl bg-surface-100 hover:bg-black/5 dark:hover:bg-white/10 text-neutral-900 dark:text-white font-bold border border-black/5 dark:border-white/10 transition-colors"
                                             >
                                                 Back to Lab
                                             </button>
@@ -410,7 +410,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                         {scoreResult && (
                                             <button
                                                 onClick={handleShare}
-                                                className="text-neutral-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
+                                                className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors flex items-center gap-2 text-sm font-bold"
                                             >
                                                 <span>📤</span> Share Result
                                             </button>
@@ -419,19 +419,19 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                 ) : (
                                     <div className="space-y-8">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-black/5 dark:border-white/5">
+                                                <div className="text-neutral-500 dark:text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Next Mission</div>
                                                 <NextPuzzleCountdown />
                                             </div>
-                                            <div className="bg-primary/40 rounded-2xl p-6 border border-white/5">
-                                                <div className="text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
+                                            <div className="bg-primary/40 rounded-2xl p-6 border border-black/5 dark:border-white/5">
+                                                <div className="text-neutral-500 dark:text-neutral-400 text-sm uppercase tracking-wider font-bold mb-2">Current Status</div>
                                                 <StatsDisplay streak={user?.streak_count || 0} />
                                             </div>
                                         </div>
                                         {scoreResult && (
                                             <button
                                                 onClick={handleShare}
-                                                className="mx-auto px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition-colors flex items-center gap-2"
+                                                className="mx-auto px-8 py-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-neutral-900 dark:text-white font-bold rounded-xl border border-black/5 dark:border-white/10 transition-colors flex items-center gap-2"
                                             >
                                                 <span>📤</span> Share Result
                                             </button>
@@ -457,10 +457,10 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                         ${completed ? 'border-accent shadow-[0_0_50px_rgba(112,0,255,0.4)]' : 'shadow-2xl'}`}
                                 >
                                     {/* Top Bar: Timer & Status */}
-                                    <div className="flex items-center justify-between mb-8 pb-6 border-b border-white/5">
+                                    <div className="flex items-center justify-between mb-8 pb-6 border-b border-black/5 dark:border-white/5">
                                         <div className="flex items-center gap-3">
                                             <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></div>
-                                            <span className="text-sm font-bold text-neutral-400 tracking-widest uppercase">
+                                            <span className="text-sm font-bold text-neutral-500 dark:text-neutral-400 tracking-widest uppercase">
                                                 {mode === 'practice' ? 'Training Mode' : 'Live Mission'}
                                             </span>
                                         </div>
@@ -483,13 +483,13 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                                     </div>
 
                                     {/* Controls Area (Integrated) */}
-                                    <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                    <div className="bg-surface-200 dark:bg-black/20 rounded-2xl p-6 border border-black/5 dark:border-white/5">
                                         <div className="flex flex-col md:flex-row items-center gap-6 justify-between">
                                             <div className="text-left w-full md:w-auto">
                                                 <p className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1">
                                                     Mission Controls
                                                 </p>
-                                                <p className="text-sm text-neutral-300">
+                                                <p className="text-sm text-neutral-600 dark:text-neutral-300">
                                                     {hintsRemaining} hint{hintsRemaining !== 1 ? 's' : ''} available
                                                 </p>
                                             </div>
@@ -559,7 +559,7 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                     )}
                 </AnimatePresence>
             </div>
-        </Layout>
+        </Layout >
     );
 };
 

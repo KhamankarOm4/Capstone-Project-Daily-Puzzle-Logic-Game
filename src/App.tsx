@@ -9,6 +9,7 @@ import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
 import DebugTrace from './pages/DebugTrace';
 import DebugAuthPage from './pages/DebugAuthPage';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 
 // Protected Route Component
@@ -89,56 +90,58 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
+    <ThemeProvider>
+      <Router>
+        <Routes>
 
-        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <GamePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            <ProtectedRoute>
-              <LeaderboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/progress"
-          element={
-            <ProtectedRoute>
-              <ProgressPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/practice"
-          element={
-            <ProtectedRoute>
-              <PracticePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/practice/:id"
-          element={
-            <ProtectedRoute>
-              <GamePage mode="practice" />
-            </ProtectedRoute>
-          }
-        />
-        {/* Debug Routes - Hidden from UI */}
-        <Route path="/debug-trace" element={<DebugTrace />} />
-        <Route path="/debug-auth" element={<DebugAuthPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <GamePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/progress"
+            element={
+              <ProtectedRoute>
+                <ProgressPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/practice"
+            element={
+              <ProtectedRoute>
+                <PracticePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/practice/:id"
+            element={
+              <ProtectedRoute>
+                <GamePage mode="practice" />
+              </ProtectedRoute>
+            }
+          />
+          {/* Debug Routes - Hidden from UI */}
+          <Route path="/debug-trace" element={<DebugTrace />} />
+          <Route path="/debug-auth" element={<DebugAuthPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 

@@ -67,15 +67,15 @@ export const ConstraintPathRenderer = ({ data, onInput, disabled, solution, hint
     return (
         <div className="flex flex-col items-center gap-8 w-full max-w-lg mx-auto p-8 glass-panel rounded-3xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                <span className="text-8xl font-black text-white">⚯</span>
+                <span className="text-8xl font-black text-neutral-900 dark:text-white">⚯</span>
             </div>
 
             <div className="text-center space-y-2 relative z-10">
-                <h3 className="text-3xl font-black text-white tracking-tighter">Constraint <span className="text-accent-glow">Path</span></h3>
-                <p className="text-neutral-300 text-sm font-medium">Connect start to end. Visit required cells. Avoid walls.</p>
+                <h3 className="text-3xl font-black text-neutral-900 dark:text-white tracking-tighter">Constraint <span className="text-accent-glow">Path</span></h3>
+                <p className="text-neutral-600 dark:text-neutral-300 text-sm font-medium">Connect start to end. Visit required cells. Avoid walls.</p>
             </div>
 
-            <div className="relative p-1 bg-black/20 rounded-xl border border-white/5 backdrop-blur-sm"
+            <div className="relative p-1 bg-surface-200 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5 backdrop-blur-sm"
                 style={{
                     display: 'grid',
                     gridTemplateColumns: `repeat(${data.gridSize}, minmax(0, 1fr))`,

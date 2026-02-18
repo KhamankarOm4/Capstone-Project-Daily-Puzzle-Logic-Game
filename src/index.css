@@ -1,24 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #030014;
-    --color-primary-light: #0f172a;
-    --color-primary-dark: #000000;
-
-    --color-accent: #7000FF;
-    --color-accent-hover: #5e00d6;
-    --color-accent-glow: #B066FF;
-    --color-accent-cyan: #00C2FF;
-
-    --color-surface-100: rgba(255, 255, 255, 0.03);
-    --color-surface-200: rgba(255, 255, 255, 0.07);
-    --color-surface-300: rgba(255, 255, 255, 0.12);
-
-    --color-highlight: #00C2FF;
-    --color-highlight-error: #ef4444;
-
-    --background-image-hero-glow: conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 360deg);
-
+    /* Shared Values */
     --animate-blob: blob 7s infinite;
 
     @keyframes blob {
@@ -38,6 +21,74 @@
             transform: translate(0px, 0px) scale(1);
         }
     }
+}
+
+/* Light Mode (Default) */
+:root {
+    --color-primary: #f8fafc;
+    /* Slate 50 */
+    --color-primary-light: #ffffff;
+    /* White */
+    --color-primary-dark: #e2e8f0;
+    /* Slate 200 */
+
+    --color-accent: #7000FF;
+    /* Keep Brand Color */
+    --color-accent-hover: #5e00d6;
+    --color-accent-glow: #B066FF;
+    --color-accent-cyan: #0080ff;
+    /* Darker Cyan for visibility on light */
+
+    --color-surface-100: rgba(0, 0, 0, 0.03);
+    --color-surface-200: rgba(0, 0, 0, 0.05);
+    --color-surface-300: rgba(0, 0, 0, 0.08);
+
+    --color-highlight: #0080ff;
+    --color-highlight-error: #ef4444;
+
+    --color-neutral-50: #0f172a;
+    /* Slate 900 (High Contrast Text) */
+    --color-neutral-100: #1e293b;
+    /* Slate 800 */
+    --color-neutral-200: #334155;
+    /* Slate 700 */
+    --color-neutral-300: #475569;
+    /* Slate 600 */
+    --color-neutral-400: #64748b;
+    /* Slate 500 */
+    --color-neutral-500: #94a3b8;
+    --color-neutral-800: #cbd5e1;
+    --color-neutral-900: #f1f5f9;
+
+    --background-image-hero-glow: conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 360deg);
+}
+
+/* Dark Mode */
+.dark {
+    --color-primary: #030014;
+    --color-primary-light: #0f172a;
+    --color-primary-dark: #000000;
+
+    --color-accent: #7000FF;
+    --color-accent-hover: #5e00d6;
+    --color-accent-glow: #B066FF;
+    --color-accent-cyan: #00C2FF;
+
+    --color-surface-100: rgba(255, 255, 255, 0.03);
+    --color-surface-200: rgba(255, 255, 255, 0.07);
+    --color-surface-300: rgba(255, 255, 255, 0.12);
+
+    --color-highlight: #00C2FF;
+    --color-highlight-error: #ef4444;
+
+    --color-neutral-50: #ffffff;
+    --color-neutral-100: #f8fafc;
+    --color-neutral-200: #cbd5e1;
+    --color-neutral-300: #94a3b8;
+    --color-neutral-400: #64748b;
+    --color-neutral-500: #475569;
+    --color-neutral-800: #1e293b;
+    --color-neutral-900: #0f172a;
 }
 
 @layer utilities {

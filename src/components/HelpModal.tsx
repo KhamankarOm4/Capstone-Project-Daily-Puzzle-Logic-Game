@@ -30,7 +30,7 @@ const HelpModal = ({ isOpen, onClose, puzzleType }: HelpModalProps) => {
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="bg-surface-100 border border-white/10 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl"
+                        className="bg-surface-100 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-2xl max-w-md w-full overflow-hidden shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
@@ -48,8 +48,8 @@ const HelpModal = ({ isOpen, onClose, puzzleType }: HelpModalProps) => {
 
                         {/* Content */}
                         <div className="p-6 space-y-6">
-                            <div className="bg-primary/30 p-4 rounded-xl border border-white/5">
-                                <p className="text-neutral-200 leading-relaxed font-medium">
+                            <div className="bg-surface-200 dark:bg-primary/30 p-4 rounded-xl border border-black/5 dark:border-white/5">
+                                <p className="text-neutral-700 dark:text-neutral-200 leading-relaxed font-medium">
                                     {instruction.description}
                                 </p>
                             </div>
@@ -58,7 +58,7 @@ const HelpModal = ({ isOpen, onClose, puzzleType }: HelpModalProps) => {
                                 <h3 className="text-sm uppercase tracking-wider text-accent-cyan font-bold">Rules</h3>
                                 <ul className="space-y-3">
                                     {instruction.rules.map((rule, idx) => (
-                                        <li key={idx} className="flex gap-3 text-neutral-300 text-sm">
+                                        <li key={idx} className="flex gap-3 text-neutral-600 dark:text-neutral-300 text-sm">
                                             <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-accent mt-2"></span>
                                             <span>{rule}</span>
                                         </li>
@@ -68,7 +68,7 @@ const HelpModal = ({ isOpen, onClose, puzzleType }: HelpModalProps) => {
 
                             <button
                                 onClick={onClose}
-                                className="w-full py-3 bg-white/10 hover:bg-white/15 text-white font-bold rounded-xl transition-colors border border-white/5"
+                                className="w-full py-3 bg-neutral-900 dark:bg-white/10 hover:bg-neutral-800 dark:hover:bg-white/15 text-white font-bold rounded-xl transition-colors border border-transparent dark:border-white/5"
                             >
                                 Got it, let's play!
                             </button>

@@ -45,11 +45,11 @@ const GameTimer = ({ startTime, isRunning = true }: GameTimerProps) => {
     };
 
     return (
-        <div className="flex items-center gap-2 bg-white px-6 py-3 rounded-xl shadow-lg border border-gray-200">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center gap-2 bg-white dark:bg-black/30 px-6 py-3 rounded-xl shadow-lg border border-gray-200 dark:border-white/10 backdrop-blur-md">
+            <svg className="w-5 h-5 text-blue-600 dark:text-accent-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-2xl font-mono font-bold text-gray-800">{formatTime(seconds)}</span>
+            <span className="text-2xl font-mono font-bold text-gray-800 dark:text-white">{formatTime(seconds)}</span>
         </div>
     );
 };

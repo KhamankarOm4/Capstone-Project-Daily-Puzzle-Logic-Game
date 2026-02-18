@@ -8,7 +8,8 @@
     "start": "node server.js",
     "build": "npx prisma generate && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "debug:check-connection": "node server/check_data.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
