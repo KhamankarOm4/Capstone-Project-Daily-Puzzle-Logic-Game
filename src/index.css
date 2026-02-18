@@ -1,7 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-    /* Shared Values */
+    /* Colors */
+    --color-primary: var(--color-primary);
+    --color-primary-light: var(--color-primary-light);
+    --color-primary-dark: var(--color-primary-dark);
+
+    --color-accent: var(--color-accent);
+    --color-accent-hover: var(--color-accent-hover);
+    --color-accent-glow: var(--color-accent-glow);
+    --color-accent-cyan: var(--color-accent-cyan);
+
+    --color-surface-100: var(--color-surface-100);
+    --color-surface-200: var(--color-surface-200);
+    --color-surface-300: var(--color-surface-300);
+
+    --color-highlight: var(--color-highlight);
+    --color-highlight-error: var(--color-highlight-error);
+
+    --color-neutral-50: var(--color-neutral-50);
+    --color-neutral-100: var(--color-neutral-100);
+    --color-neutral-200: var(--color-neutral-200);
+    --color-neutral-300: var(--color-neutral-300);
+    --color-neutral-400: var(--color-neutral-400);
+    --color-neutral-500: var(--color-neutral-500);
+    --color-neutral-800: var(--color-neutral-800);
+    --color-neutral-900: var(--color-neutral-900);
+
+    /* Background Images */
+    --background-image-hero-glow: conic-gradient(from 180deg at 50% 50%, #2a8af6 0deg, #a853ba 180deg, #e92a67 360deg);
+
+    /* Animations */
     --animate-blob: blob 7s infinite;
 
     @keyframes blob {
@@ -21,6 +50,11 @@
             transform: translate(0px, 0px) scale(1);
         }
     }
+
+    /* Fonts */
+    --font-sans: "Inter",
+    system-ui,
+    sans-serif;
 }
 
 /* Light Mode (Default) */
