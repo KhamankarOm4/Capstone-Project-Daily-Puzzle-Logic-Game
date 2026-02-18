@@ -7,6 +7,8 @@ import GamePage from './pages/GamePage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
+import DebugTrace from './pages/DebugTrace';
+import DebugAuthPage from './pages/DebugAuthPage';
 
 
 // Protected Route Component
@@ -131,6 +133,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* Debug Routes - Hidden from UI */}
+        <Route path="/debug-trace" element={<DebugTrace />} />
+        <Route path="/debug-auth" element={<DebugAuthPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
