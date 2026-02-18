@@ -7,7 +7,8 @@ const router = Router();
 // POST /puzzle/complete - record daily puzzle completion and update streak/points
 router.post('/complete', requireAuth(), async (req, res) => {
   const userId = req.user.id;
-  const { score } = req.body;
+  // Frontend sends { finalScore, timeSeconds, ... }
+  const { finalScore } = req.body;
 
   console.log(`🧩 HIT /puzzle/complete for user ${userId}. Score: ${score}`);
 
@@ -39,7 +40,7 @@ router.post('/complete', requireAuth(), async (req, res) => {
       newStreak = user.streak_count + 1;
     }
 
-    const safeScore = Number(score) || 0;
+    const safeScore = Number(finalScore) || 0;
     const currentPoints = user.total_points || 0;
 
     const updatedUser = await prisma.user.update({

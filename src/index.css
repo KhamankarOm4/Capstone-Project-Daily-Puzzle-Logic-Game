@@ -147,6 +147,17 @@
     }
 }
 
+@layer base {
+    body {
+        @apply bg-primary text-neutral-900 dark:text-white transition-colors duration-300;
+        background-image: radial-gradient(circle at 50% 0%, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    }
+
+    .dark body {
+        background-image: radial-gradient(circle at 50% 0%, #171520 0%, #020617 100%);
+    }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;

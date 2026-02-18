@@ -55,9 +55,26 @@ router.post('/', requireAuth({ allowGuest: true }), async (req, res) => {
  */
 router.get('/', async (req, res) => {
     try {
+        const { date, limit = 100 } = req.query;
+        let where = {};
+
+        if (date) {
+            const queryDate = new Date(date);
+            const startOfDay = new Date(queryDate.setHours(0, 0, 0, 0));
+            const endOfDay = new Date(queryDate.setHours(23, 59, 59, 999));
+            where.date = { gte: startOfDay, lte: endOfDay };
+        } else {
+            // Default to today if no date specified for "Daily" leaderboard
+            const today = new Date();
+            const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+            const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+            where.date = { gte: startOfDay, lte: endOfDay };
+        }
+
         const scores = await prisma.dailyScore.findMany({
+            where,
             orderBy: [{ score: 'desc' }, { time_taken: 'asc' }],
-            take: 100
+            take: Number(limit)
         });
 
         // Manually fetch user details for the leaderboard to avoid foreign key issues with guest IDs
