@@ -23,8 +23,18 @@ router.post('/', requireAuth({ allowGuest: true }), async (req, res) => {
     }
 
     try {
+        const queryDate = new Date(date);
+        const startOfDay = new Date(queryDate.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(queryDate.setHours(23, 59, 59, 999));
+
         const existing = await prisma.dailyScore.findFirst({
-            where: { user_id, date: new Date(date) }
+            where: {
+                user_id,
+                date: {
+                    gte: startOfDay,
+                    lte: endOfDay
+                }
+            }
         });
 
         if (existing) {
