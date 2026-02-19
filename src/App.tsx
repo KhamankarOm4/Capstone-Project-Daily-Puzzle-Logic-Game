@@ -9,6 +9,7 @@ import ProgressPage from './pages/ProgressPage';
 import PracticePage from './pages/PracticePage';
 import DebugTrace from './pages/DebugTrace';
 import DebugAuthPage from './pages/DebugAuthPage';
+import HomePage from './pages/HomePage';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 
@@ -97,6 +98,14 @@ function App() {
           <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
           <Route
             path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/play"
             element={
               <ProtectedRoute>
                 <GamePage />
