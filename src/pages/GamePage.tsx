@@ -265,10 +265,6 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                 recordDayActivity(true);
 
                 markTodayCompleted(true, 1);
-
-                // Submit to leaderboard (fire-and-forget)
-                const userId = user?.id || localStorage.getItem('daily-puzzle-user') || 'guest';
-                submitScore(userId, todayDate, score.finalScore, score.timeSeconds).catch(() => { });
             }
 
             setCompleted(true);

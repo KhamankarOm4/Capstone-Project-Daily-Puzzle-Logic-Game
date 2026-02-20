@@ -103,10 +103,12 @@ const LeaderboardPage = () => {
                                                         </div>
                                                         <div className="flex flex-col">
                                                             <span className={`font-bold text-sm ${entry.user_id === user?.id ? 'text-accent' : 'text-neutral-200 group-hover:text-white transition-colors'}`}>
-                                                                {entry.user_id === user?.id ? 'You' : (entry.user?.username || 'Anonymous')}
+                                                                {entry.user_id === user?.id ? 'You' : (entry.user?.username || entry.user?.name || 'Anonymous')}
                                                             </span>
-                                                            {entry.user_id === user?.id && entry.user?.username && (
-                                                                <span className="text-[10px] text-neutral-500">@{entry.user.username}</span>
+                                                            {(entry.user?.username || entry.user?.name) && (
+                                                                <span className="text-[10px] text-neutral-500">
+                                                                    {entry.user?.username ? `@${entry.user.username}` : entry.user?.name}
+                                                                </span>
                                                             )}
                                                         </div>
                                                     </div>

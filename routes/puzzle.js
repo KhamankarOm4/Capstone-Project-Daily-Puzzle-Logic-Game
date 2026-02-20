@@ -50,6 +50,7 @@ router.post('/complete', requireAuth(), async (req, res) => {
     console.log(`🧩 [DEBUG] Current DB State - Streak: ${user.streak_count}, Points: ${user.total_points}, LastPlayed: ${user.last_played}`);
     console.log(`🧩 [DEBUG] Calculated Updates - NewStreak: ${newStreak}, FinalPoints: ${finalPoints}, safeScore: ${safeScore}`);
 
+    // Update User and Leaderboard Score atomically (within the same try block)
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -58,6 +59,37 @@ router.post('/complete', requireAuth(), async (req, res) => {
         total_points: finalPoints,
       },
     });
+
+    // Also update/create Leaderboard entry for today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const existingScore = await prisma.dailyScore.findFirst({
+      where: {
+        user_id: userId,
+        date: { gte: todayStart, lte: todayEnd }
+      }
+    });
+
+    if (existingScore) {
+      if (safeScore > existingScore.score) {
+        await prisma.dailyScore.update({
+          where: { id: existingScore.id },
+          data: { score: safeScore, time_taken: Number(req.body.timeSeconds) || 0 }
+        });
+      }
+    } else {
+      await prisma.dailyScore.create({
+        data: {
+          user_id: userId,
+          date: new Date(),
+          score: safeScore,
+          time_taken: Number(req.body.timeSeconds) || 0
+        }
+      });
+    }
 
     console.log(`🧩 [DEBUG] DB Update Success: streak=${updatedUser.streak_count}, points=${updatedUser.total_points}`);
 
