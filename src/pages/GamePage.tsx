@@ -20,7 +20,6 @@ import { recordDayActivity } from '../utils/activityTracker';
 import { isTodayCompleted, markTodayCompleted } from '../utils/dailyReset';
 import { useHint, getHintsRemaining } from '../utils/hintSystem';
 import { calculateScore } from '../utils/scoring';
-import { submitScore } from '../api/leaderboard';
 import { updateUser } from '../features/user/userSlice';
 import HelpModal from '../components/HelpModal';
 import { useSound } from '../contexts/SoundContext';
