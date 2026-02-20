@@ -9,11 +9,12 @@ router.post('/complete', requireAuth(), async (req, res) => {
   const userId = req.user.id;
   // Support both property names to be extra safe
   const finalScore = req.body.finalScore !== undefined ? req.body.finalScore : req.body.score;
+  const puzzleDate = req.body.date ? new Date(req.body.date) : new Date();
 
   console.log(`🧩 [DEBUG] /puzzle/complete HIT`);
   console.log(`🧩 [DEBUG] User ID: ${userId}`);
   console.log(`🧩 [DEBUG] req.body keys:`, Object.keys(req.body));
-  console.log(`🧩 [DEBUG] extracted finalScore: ${finalScore}`);
+  console.log(`🧩 [DEBUG] extracted finalScore: ${finalScore}, date: ${puzzleDate}`);
 
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -60,10 +61,10 @@ router.post('/complete', requireAuth(), async (req, res) => {
       },
     });
 
-    // Also update/create Leaderboard entry for today
-    const todayStart = new Date();
+    // Also update/create Leaderboard entry for the specific puzzle date
+    const todayStart = new Date(puzzleDate);
     todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
+    const todayEnd = new Date(puzzleDate);
     todayEnd.setHours(23, 59, 59, 999);
 
     const existingScore = await prisma.dailyScore.findFirst({
@@ -84,7 +85,7 @@ router.post('/complete', requireAuth(), async (req, res) => {
       await prisma.dailyScore.create({
         data: {
           user_id: userId,
-          date: new Date(),
+          date: puzzleDate,
           score: safeScore,
           time_taken: Number(req.body.timeSeconds) || 0
         }
