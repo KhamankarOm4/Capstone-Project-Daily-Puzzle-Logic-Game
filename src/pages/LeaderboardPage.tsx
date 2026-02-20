@@ -61,7 +61,7 @@ const LeaderboardPage = () => {
                         <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 flex items-center gap-3 drop-shadow-sm">
                             <span>🏆</span> Daily Leaderboard
                         </h1>
-                        <p className="text-neutral-400 mt-2 font-medium tracking-wide text-sm uppercase">Top Agents for {new Date().toLocaleDateString()}</p>
+                        <p className="text-neutral-400 mt-2 font-medium tracking-wide text-sm uppercase">Top Contestants for {new Date().toLocaleDateString()}</p>
                     </div>
 
                     <div className="p-0">

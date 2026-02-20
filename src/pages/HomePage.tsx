@@ -79,7 +79,7 @@ const HomePage = () => {
                     <div className="glass-card p-6 rounded-2xl">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                <span>🏆</span> Top Agents
+                                <span>🏆</span> Top Contestants
                             </h2>
                             <Link to="/leaderboard" className="text-xs text-accent-cyan hover:text-white transition-colors">View All &rarr;</Link>
                         </div>
@@ -88,7 +88,7 @@ const HomePage = () => {
                                 <div key={i} className="flex items-center justify-between bg-white/5 p-3 rounded-lg">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-yellow-500/20 text-yellow-400' :
-                                                i === 1 ? 'bg-neutral-400/20 text-neutral-300' : 'bg-orange-500/20 text-orange-400'
+                                            i === 1 ? 'bg-neutral-400/20 text-neutral-300' : 'bg-orange-500/20 text-orange-400'
                                             }`}>
                                             {i + 1}
                                         </div>
