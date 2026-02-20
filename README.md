@@ -1,78 +1,87 @@
+# 🧩 Logic Looper
 
-# React + TypeScript + Vite
+**Logic Looper** is a premium daily logic puzzle platform where users solve a unique challenge every day, compete on global leaderboards, and maintain their winning streaks.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![App Screenshot](public/screenshot.png) (Add a screenshot here)
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Daily Challenges**: A new, unique logic puzzle every 24 hours.
+- **Practice Mode**: Sharpens your skills with historical or practice puzzles.
+- **Global Leaderboard**: Compete with other "Agents" to secure the top spot for the day.
+- **Streak System**: Track your consecutive days played and keep the fire burning! 🔥
+- **Advanced Scoring**: Points are calculated based on time, accuracy, and hint usage.
+- **Dark/Light Mode**: Seamlessly transition between themes for the best experience.
+- **PWA Ready**: Installable on mobile and desktop for quick access.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- **Framework**: React 19 (Vite)
+- **Language**: TypeScript
+- **State Management**: Redux Toolkit (RTK)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Utilities**: Day.js (Date handling), idb (IndexedDB persistence)
 
-## Expanding the ESLint configuration
+### Backend
+- **Server**: Express.js (Node.js)
+- **ORM**: Prisma (PostgreSQL)
+- **Authentication**: Google OAuth (Passport.js) & JWT
+- **Hosting**: Designed for deployment on Render/Vercel
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Getting Started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL Database
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/KhamankarOm4/Capstone-Project-Daily-Puzzle-Logic-Game.git
+   cd DailyPuzzle
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. **Set up Environment Variables**:
+   Create a `.env` file in the root directory and add the following:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/dailypuzzle"
+   SESSION_SECRET="your-secret-key"
+   GOOGLE_CLIENT_ID="your-google-client-id"
+   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   FRONTEND_URL="http://localhost:5173"
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+4. **Initialize Database**:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
+5. **Run Development Server**:
+   ```bash
+   # Start the frontend (Vite)
+   npm run dev
 
-:wq
-//
+   # Start the backend (in a separate terminal)
+   npm start
+   ```
+
+## 📂 Project Structure
+
+- `src/`: React frontend source code.
+- `routes/`: Express API endpoints.
+- `lib/`: Shared utilities and database clients.
+- `prisma/`: Database schema and migrations.
+- `public/`: Static assets and PWA icons.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

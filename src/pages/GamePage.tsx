@@ -230,17 +230,23 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                             'Content-Type': 'application/json',
                             'Authorization': token ? `Bearer ${token}` : '',
                         },
-                        body: JSON.stringify(score),
+                        body: JSON.stringify({
+                            finalScore: score.finalScore,
+                            timeSeconds: score.timeSeconds
+                        }),
                         credentials: 'include',
                     });
 
                     if (response.ok) {
                         const data = await response.json();
-                        dispatch(updateUser({
-                            streak_count: data.streak_count,
-                            total_points: data.total_points,
-                            last_played: new Date().toISOString()
-                        }));
+                        // Only update if we have a valid user state
+                        if (user) {
+                            dispatch(updateUser({
+                                streak_count: data.streak_count,
+                                total_points: data.total_points,
+                                last_played: new Date().toISOString()
+                            }));
+                        }
 
                         // Trigger celebration if streak_count >= 2
                         if (data.streak_count >= 2) {

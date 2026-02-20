@@ -86,9 +86,18 @@ router.get('/', async (req, res) => {
             orderBy: [{ score: 'desc' }, { time_taken: 'asc' }],
             take: Number(limit)
         });
+        // Deduplicate scores: only keep the best score for each user
+        const uniqueScores = [];
+        const seenUsers = new Set();
+        for (const s of scores) {
+            if (!seenUsers.has(s.user_id)) {
+                uniqueScores.push(s);
+                seenUsers.add(s.user_id);
+            }
+        }
 
         // Manually fetch user details for the leaderboard to avoid foreign key issues with guest IDs
-        const userIds = [...new Set(scores.map(s => s.user_id).filter(id => !id.startsWith('guest_')))];
+        const userIds = [...new Set(uniqueScores.map(s => s.user_id).filter(id => !id.startsWith('guest_')))];
 
         let usersMap = {};
         if (userIds.length > 0) {
@@ -99,7 +108,7 @@ router.get('/', async (req, res) => {
             users.forEach(u => usersMap[u.id] = u);
         }
 
-        const enrichedScores = scores.map(score => {
+        const enrichedScores = uniqueScores.map(score => {
             const user = usersMap[score.user_id];
             return {
                 ...score,
@@ -110,7 +119,6 @@ router.get('/', async (req, res) => {
                 } : null
             };
         });
-
         res.json({
             leaderboard: enrichedScores,
             total: enrichedScores.length

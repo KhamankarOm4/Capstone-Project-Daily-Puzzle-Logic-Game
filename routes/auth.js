@@ -79,7 +79,9 @@ router.get('/google/callback', async (req, res) => {
         log('Generating Token...');
         const token = generateToken(user);
 
-        // IMPORTANT: write header + end response manually
+        // IMPORTANT: Use origin for dynamic redirect (handles localhost vs production)
+        const redirectUrl = origin || 'https://capstone-project-daily-puzzle-logic-game-kzmt.onrender.com';
+
         res.writeHead(302, {
             'Set-Cookie': serialize('auth_token', token, {
                 httpOnly: true,
@@ -88,7 +90,7 @@ router.get('/google/callback', async (req, res) => {
                 path: '/',
                 maxAge: 60 * 60 * 24 * 7
             }),
-            'Location': 'https://capstone-project-daily-puzzle-logic-game-kzmt.onrender.com'
+            'Location': redirectUrl
         });
         res.end();
 

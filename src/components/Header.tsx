@@ -119,9 +119,14 @@ const Header = () => {
                     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/40 border border-white/5 hover:border-accent/20 transition-colors group relative overflow-hidden">
                         <div className="absolute inset-0 bg-accent/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                         <span className="relative z-10 text-lg group-hover:scale-110 transition-transform drop-shadow-[0_0_5px_rgba(255,100,0,0.5)]">🔥</span>
-                        <span className="relative z-10 font-bold text-neutral-200 group-hover:text-white">
+                        <motion.span
+                            key={user?.streak_count}
+                            initial={{ scale: 1.5, filter: 'brightness(2)' }}
+                            animate={{ scale: 1, filter: 'brightness(1)' }}
+                            className="relative z-10 font-bold text-neutral-200 group-hover:text-white"
+                        >
                             {user?.streak_count || 0}
-                        </span>
+                        </motion.span>
                     </div>
 
                     {/* Points Display */}
