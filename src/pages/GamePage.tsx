@@ -237,12 +237,13 @@ const GamePage = ({ mode = 'daily' }: GamePageProps) => {
                     if (response.ok) {
                         const data = await response.json();
                         dispatch(updateUser({
-                            streak_count: data.streak,
-                            total_points: data.total_points
+                            streak_count: data.streak_count,
+                            total_points: data.total_points,
+                            last_played: new Date().toISOString()
                         }));
 
-                        // Trigger celebration if streak >= 2
-                        if (data.streak >= 2) {
+                        // Trigger celebration if streak_count >= 2
+                        if (data.streak_count >= 2) {
                             setShowCelebration(true);
                             setTimeout(() => setShowCelebration(false), 4000);
                         }
